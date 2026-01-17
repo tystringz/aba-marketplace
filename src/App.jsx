@@ -383,22 +383,22 @@ const Nav = ({ screen, setScreen, cart, isMobile }) => (
         </div>
       </div>
     </div>
-    <div style={{ display: 'flex', gap: isMobile ? 6 : 12, padding: isMobile ? '8px 12px' : '12px 24px', fontSize: isMobile ? 9 : 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+    <div style={{ display: 'flex', gap: isMobile ? 8 : 12, padding: isMobile ? '8px 12px' : '12px 24px', fontSize: isMobile ? 10 : 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
       {[
-        ['research', isMobile ? '🏛️' : '🏛️ Overview'],
-        ['why-aba', isMobile ? '1️⃣' : '1. Why Aba'],
-        ['quick-wins', isMobile ? '2️⃣' : '2. Quick Wins'],
-        ['pilot', isMobile ? '3️⃣' : '3. Pilot Ask'],
-        ['operating', isMobile ? '4️⃣' : '4. Sustainability'],
-        ['next-steps', isMobile ? '5️⃣' : '5. Next Steps'],
-        ['ai-platform', '🤖'],
-        ['home', isMobile ? '🏠' : 'Demo: Home'],
-        ['listings', isMobile ? '📦' : 'Products'],
-        ['seller', isMobile ? '👤' : 'Sellers'],
-        ['dashboard', '📊'],
-        ['memory', isMobile ? '📜' : 'Legacy']
-      ].map(([id, label]) => (
-        <span key={id} onClick={() => setScreen(id)} style={{ cursor: 'pointer', opacity: screen === id ? 1 : 0.7, fontWeight: screen === id ? 'bold' : 'normal', borderBottom: screen === id ? `2px solid ${GOLD}` : 'none', paddingBottom: 4 }}>{label}</span>
+        ['research', '🏛️', 'Overview'],
+        ['why-aba', '📍', 'Why Aba'],
+        ['quick-wins', '🎯', 'Quick Wins'],
+        ['pilot', '💰', 'Pilot Ask'],
+        ['operating', '♻️', 'Sustainability'],
+        ['next-steps', '➡️', 'Next Steps'],
+        ['ai-platform', '🤖', 'AI Platform'],
+        ['home', '🏠', 'Home'],
+        ['listings', '📦', 'Products'],
+        ['seller', '👤', 'Sellers'],
+        ['dashboard', '📊', 'Dashboard'],
+        ['memory', '📜', 'Legacy']
+      ].map(([id, icon, label]) => (
+        <span key={id} onClick={() => setScreen(id)} style={{ cursor: 'pointer', opacity: screen === id ? 1 : 0.7, fontWeight: screen === id ? 'bold' : 'normal', borderBottom: screen === id ? `2px solid ${GOLD}` : 'none', paddingBottom: 4 }}>{isMobile ? icon : `${icon} ${label}`}</span>
       ))}
     </div>
   </div>
