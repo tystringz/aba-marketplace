@@ -383,22 +383,22 @@ const Nav = ({ screen, setScreen, cart, isMobile }) => (
         </div>
       </div>
     </div>
-    <div style={{ display: 'flex', gap: isMobile ? 6 : 8, padding: isMobile ? '10px 12px' : '12px 24px', fontSize: isMobile ? 10 : 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+    <div style={{ display: 'flex', gap: isMobile ? 4 : 8, padding: isMobile ? '10px 8px' : '12px 24px', fontSize: isMobile ? 10 : 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)', justifyContent: isMobile ? 'center' : 'flex-start' }}>
       {[
-        ['research', '🏛️', 'Overview'],
-        ['why-aba', '📍', 'Why Aba'],
-        ['quick-wins', '🎯', 'Quick Wins'],
-        ['pilot', '💰', 'Pilot Ask'],
-        ['operating', '♻️', 'Sustainability'],
-        ['next-steps', '➡️', 'Next Steps'],
-        ['ai-platform', '🤖', 'AI Platform'],
-        ['onboarding', '📝', 'Seller Signup'],
-        ['home', '🏠', 'Home'],
-        ['listings', '📦', 'Products'],
-        ['seller', '👤', 'Sellers'],
-        ['dashboard', '📊', 'Dashboard'],
-        ['memory', '📜', 'Legacy']
-      ].map(([id, icon, label]) => (
+        ['research', '🏛️', 'Overview', 'Intro'],
+        ['why-aba', '📍', 'Why Aba', 'Why'],
+        ['quick-wins', '🎯', 'Quick Wins', 'Wins'],
+        ['pilot', '💰', 'Pilot Ask', 'Pilot'],
+        ['operating', '♻️', 'Sustainability', 'Model'],
+        ['next-steps', '➡️', 'Next Steps', 'Next'],
+        ['ai-platform', '🤖', 'AI Platform', 'AI'],
+        ['onboarding', '📝', 'Seller Signup', 'Signup'],
+        ['home', '🏠', 'Home', 'Home'],
+        ['listings', '📦', 'Products', 'Shop'],
+        ['seller', '👤', 'Sellers', 'Seller'],
+        ['dashboard', '📊', 'Dashboard', 'Stats'],
+        ['memory', '📜', 'Legacy', 'Legacy']
+      ].map(([id, icon, label, shortLabel]) => (
         <span
           key={id}
           onClick={() => setScreen(id)}
@@ -406,15 +406,22 @@ const Nav = ({ screen, setScreen, cart, isMobile }) => (
             cursor: 'pointer',
             backgroundColor: screen === id ? GOLD : 'rgba(255,255,255,0.1)',
             color: screen === id ? NAVY : WHITE,
-            padding: isMobile ? '6px 10px' : '8px 14px',
-            borderRadius: 20,
+            padding: isMobile ? '6px 8px' : '8px 14px',
+            borderRadius: isMobile ? 12 : 20,
             fontWeight: screen === id ? 'bold' : 'normal',
             transition: 'all 0.2s ease',
             border: screen === id ? 'none' : '1px solid rgba(255,255,255,0.2)',
-            whiteSpace: 'nowrap'
+            whiteSpace: 'nowrap',
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            alignItems: 'center',
+            gap: isMobile ? 2 : 6,
+            fontSize: isMobile ? 8 : 11,
+            minWidth: isMobile ? 44 : 'auto'
           }}
         >
-          {isMobile ? icon : `${icon} ${label}`}
+          <span style={{ fontSize: isMobile ? 14 : 13 }}>{icon}</span>
+          <span>{isMobile ? shortLabel : label}</span>
         </span>
       ))}
     </div>
