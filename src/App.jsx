@@ -392,6 +392,7 @@ const Nav = ({ screen, setScreen, cart, isMobile }) => (
         ['operating', '♻️', 'Sustainability'],
         ['next-steps', '➡️', 'Next Steps'],
         ['ai-platform', '🤖', 'AI Platform'],
+        ['onboarding', '📝', 'Seller Signup'],
         ['home', '🏠', 'Home'],
         ['listings', '📦', 'Products'],
         ['seller', '👤', 'Sellers'],
@@ -2106,6 +2107,498 @@ const Seller = ({ setScreen, seller, cart, setCart }) => {
   );
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SELLER ONBOARDING VISUAL WALKTHROUGH
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const SellerOnboarding = ({ setScreen }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = [
+    {
+      id: 1,
+      icon: '📱',
+      title: 'Phone Verification',
+      subtitle: 'Secure OTP Authentication',
+      description: 'Seller enters phone number and receives a one-time password via SMS for verification.',
+      fields: ['Phone Number', 'OTP Code'],
+      badge: null,
+      color: '#4CAF50',
+      mockup: {
+        title: 'Enter Your Phone',
+        content: (
+          <div>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Phone Number</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                +234 803 XXX XXXX
+              </div>
+            </div>
+            <div style={{ padding: '14px', backgroundColor: GOLD, color: WHITE, borderRadius: 8, textAlign: 'center', fontWeight: 'bold' }}>
+              Send OTP →
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 2,
+      icon: '🪪',
+      title: 'NIN Verification',
+      subtitle: 'Government Identity Check',
+      description: 'Upload National Identification Number for identity verification via NIMC database.',
+      fields: ['NIN Number', 'Date of Birth', 'Full Name'],
+      badge: '✓ Identity Verified',
+      color: '#2196F3',
+      mockup: {
+        title: 'Verify Your Identity',
+        content: (
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>NIN Number</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                12345678901
+              </div>
+            </div>
+            <div style={{ marginBottom: 16 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Date of Birth</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                15 / 03 / 1985
+              </div>
+            </div>
+            <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: SUCCESS }}>✓</span>
+              <span style={{ fontSize: 12, color: SUCCESS }}>Connected to NIMC Database</span>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 3,
+      icon: '🏪',
+      title: 'Business Profile',
+      subtitle: 'Shop Information',
+      description: 'Enter business details including shop name, category, market location, and contact information.',
+      fields: ['Shop Name', 'Category', 'Market/Location', 'Shop Address'],
+      badge: null,
+      color: '#FF9800',
+      mockup: {
+        title: 'Your Business',
+        content: (
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Shop Name</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                Chukwu Quality Shoes
+              </div>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Category</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Footwear</span>
+                <span>▼</span>
+              </div>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Market Location</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Ariaria International Market</span>
+                <span>▼</span>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 4,
+      icon: '📋',
+      title: 'CAC Registration',
+      subtitle: 'Optional Business Verification',
+      description: 'Registered businesses can add CAC number for additional credibility and "Registered Business" badge.',
+      fields: ['CAC Number', 'Business Type', 'Registration Date'],
+      badge: '✓ CAC Verified',
+      color: '#9C27B0',
+      optional: true,
+      mockup: {
+        title: 'Business Registration',
+        content: (
+          <div>
+            <div style={{ padding: '10px', backgroundColor: '#fff3e0', borderRadius: 8, marginBottom: 16, fontSize: 11 }}>
+              💡 Optional: Add your CAC number for a "Registered Business" badge
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>CAC/BN Number</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                BN 12345678
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ flex: 1, padding: '12px', backgroundColor: '#f5f5f5', borderRadius: 8, textAlign: 'center', fontSize: 12, cursor: 'pointer' }}>
+                Skip for Now
+              </div>
+              <div style={{ flex: 1, padding: '12px', backgroundColor: NAVY, color: WHITE, borderRadius: 8, textAlign: 'center', fontSize: 12, fontWeight: 'bold' }}>
+                Verify CAC
+              </div>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 5,
+      icon: '🏦',
+      title: 'Bank Account',
+      subtitle: 'Payment Setup',
+      description: 'Link bank account for receiving payments. Funds from sales are deposited directly after escrow release.',
+      fields: ['Bank Name', 'Account Number', 'Account Name'],
+      badge: '✓ Bank Linked',
+      color: '#00BCD4',
+      mockup: {
+        title: 'Payment Account',
+        content: (
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Select Bank</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', display: 'flex', justifyContent: 'space-between' }}>
+                <span>First Bank of Nigeria</span>
+                <span>▼</span>
+              </div>
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ fontSize: 11, color: '#666', marginBottom: 4 }}>Account Number</div>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd' }}>
+                3012345678
+              </div>
+            </div>
+            <div style={{ padding: '10px', backgroundColor: '#e8f5e9', borderRadius: 8 }}>
+              <div style={{ fontSize: 11, color: '#666' }}>Account Name</div>
+              <div style={{ fontSize: 13, fontWeight: 'bold', color: SUCCESS }}>CHUKWU EMMANUEL OBIORA</div>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 6,
+      icon: '📸',
+      title: 'Upload Products',
+      subtitle: 'List Your Items',
+      description: 'Add products with photos, descriptions, prices, and inventory. AI assists with descriptions and pricing suggestions.',
+      fields: ['Product Photos', 'Name & Description', 'Price', 'Stock Quantity'],
+      badge: null,
+      color: '#E91E63',
+      mockup: {
+        title: 'Add Your Products',
+        content: (
+          <div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+              {['👟', '👞', '+'].map((item, i) => (
+                <div key={i} style={{
+                  aspectRatio: '1',
+                  backgroundColor: i < 2 ? '#f5f5f5' : '#fff',
+                  borderRadius: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: i < 2 ? 28 : 24,
+                  border: '2px dashed #ddd'
+                }}>
+                  {item}
+                </div>
+              ))}
+            </div>
+            <div style={{ marginBottom: 12 }}>
+              <div style={{ padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', fontSize: 13 }}>
+                Men's Leather Oxford Shoes
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ flex: 1, padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', fontSize: 13 }}>
+                ₦25,000
+              </div>
+              <div style={{ flex: 1, padding: '12px 16px', backgroundColor: '#f5f5f5', borderRadius: 8, border: '1px solid #ddd', fontSize: 13 }}>
+                Stock: 24
+              </div>
+            </div>
+          </div>
+        )
+      }
+    },
+    {
+      id: 7,
+      icon: '✅',
+      title: 'Verification Complete!',
+      subtitle: 'You\'re Ready to Sell',
+      description: 'Seller profile is now verified and live. Products are visible to buyers across Nigeria.',
+      fields: [],
+      badge: '🏆 VERIFIED SELLER',
+      color: SUCCESS,
+      mockup: {
+        title: 'Welcome, Verified Seller!',
+        content: (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{
+              width: 80,
+              height: 80,
+              borderRadius: '50%',
+              backgroundColor: '#e8f5e9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              fontSize: 40
+            }}>
+              ✓
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>
+              Chukwu Quality Shoes
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+              <span style={{ padding: '4px 10px', backgroundColor: SUCCESS, color: WHITE, borderRadius: 12, fontSize: 10 }}>✓ NIN Verified</span>
+              <span style={{ padding: '4px 10px', backgroundColor: NAVY, color: WHITE, borderRadius: 12, fontSize: 10 }}>✓ CAC Verified</span>
+              <span style={{ padding: '4px 10px', backgroundColor: GOLD, color: WHITE, borderRadius: 12, fontSize: 10 }}>✓ Bank Linked</span>
+            </div>
+            <div style={{ padding: '14px', backgroundColor: GOLD, color: NAVY, borderRadius: 8, fontWeight: 'bold' }}>
+              🚀 Start Selling Now
+            </div>
+          </div>
+        )
+      }
+    }
+  ];
+
+  const step = steps[currentStep];
+
+  return (
+    <div>
+      {/* Header */}
+      <Card style={{ padding: 24, marginBottom: 20, background: `linear-gradient(135deg, ${NAVY} 0%, #001a4d 100%)`, color: WHITE }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+          <div>
+            <div style={{ fontSize: 12, color: GOLD, marginBottom: 4 }}>SELLER ONBOARDING PROCESS</div>
+            <div style={{ fontSize: 24, fontWeight: 'bold' }}>How Traders Join the Platform</div>
+            <div style={{ fontSize: 14, opacity: 0.9, marginTop: 8 }}>7-step verification process ensuring trust and accountability</div>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 36, fontWeight: 'bold', color: GOLD }}>2,847</div>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>Sellers Onboarded (Pilot)</div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Progress Bar */}
+      <Card style={{ padding: 20, marginBottom: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY }}>Registration Progress</div>
+          <div style={{ fontSize: 12, color: '#666' }}>Step {currentStep + 1} of {steps.length}</div>
+        </div>
+        <div style={{ display: 'flex', gap: 4 }}>
+          {steps.map((s, i) => (
+            <div
+              key={s.id}
+              onClick={() => setCurrentStep(i)}
+              style={{
+                flex: 1,
+                height: 8,
+                backgroundColor: i <= currentStep ? GOLD : '#e0e0e0',
+                borderRadius: 4,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease'
+              }}
+            />
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+          {steps.map((s, i) => (
+            <div
+              key={s.id}
+              onClick={() => setCurrentStep(i)}
+              style={{
+                fontSize: 16,
+                cursor: 'pointer',
+                opacity: i === currentStep ? 1 : 0.4,
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {s.icon}
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Main Content - Step Detail */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+        {/* Left: Step Info */}
+        <Card style={{ padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+            <div style={{
+              width: 60,
+              height: 60,
+              borderRadius: 16,
+              backgroundColor: step.color + '20',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 30
+            }}>
+              {step.icon}
+            </div>
+            <div>
+              <div style={{ fontSize: 10, color: step.color, fontWeight: 'bold' }}>STEP {step.id}</div>
+              <div style={{ fontSize: 20, fontWeight: 'bold', color: NAVY }}>{step.title}</div>
+              <div style={{ fontSize: 12, color: '#666' }}>{step.subtitle}</div>
+            </div>
+          </div>
+
+          <p style={{ fontSize: 14, color: '#444', lineHeight: 1.6, marginBottom: 20 }}>
+            {step.description}
+          </p>
+
+          {step.fields.length > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, fontWeight: 'bold', color: NAVY, marginBottom: 10 }}>Information Collected:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {step.fields.map(field => (
+                  <span key={field} style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#f5f5f5',
+                    borderRadius: 16,
+                    fontSize: 12,
+                    color: '#555'
+                  }}>
+                    {field}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step.badge && (
+            <div style={{
+              padding: '12px 16px',
+              backgroundColor: step.color + '15',
+              borderRadius: 8,
+              border: `1px solid ${step.color}40`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10
+            }}>
+              <span style={{ fontSize: 20 }}>🏅</span>
+              <div>
+                <div style={{ fontSize: 10, color: '#666' }}>Badge Earned</div>
+                <div style={{ fontSize: 14, fontWeight: 'bold', color: step.color }}>{step.badge}</div>
+              </div>
+            </div>
+          )}
+
+          {step.optional && (
+            <div style={{ marginTop: 12, padding: '10px', backgroundColor: '#fff8e1', borderRadius: 8, fontSize: 12, color: '#f57c00' }}>
+              ⚡ This step is optional but increases seller credibility
+            </div>
+          )}
+        </Card>
+
+        {/* Right: Phone Mockup */}
+        <Card style={{ padding: 24, display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8f9fa' }}>
+          <div style={{
+            width: 280,
+            backgroundColor: WHITE,
+            borderRadius: 32,
+            padding: 12,
+            boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+            border: '8px solid #1a1a1a'
+          }}>
+            {/* Phone Header */}
+            <div style={{
+              backgroundColor: NAVY,
+              borderRadius: '20px 20px 0 0',
+              padding: '12px 16px',
+              color: WHITE
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <span style={{ fontSize: 10 }}>9:41</span>
+                <div style={{ display: 'flex', gap: 4 }}>
+                  <span style={{ fontSize: 10 }}>📶</span>
+                  <span style={{ fontSize: 10 }}>🔋</span>
+                </div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 'bold' }}>{step.mockup.title}</div>
+              <div style={{ fontSize: 10, opacity: 0.8 }}>Aba Marketplace</div>
+            </div>
+            {/* Phone Content */}
+            <div style={{ padding: 16, minHeight: 280 }}>
+              {step.mockup.content}
+            </div>
+            {/* Phone Footer */}
+            <div style={{
+              height: 4,
+              width: 100,
+              backgroundColor: '#1a1a1a',
+              borderRadius: 2,
+              margin: '8px auto'
+            }} />
+          </div>
+        </Card>
+      </div>
+
+      {/* Navigation */}
+      <Card style={{ padding: 20 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Btn
+            onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+            style={{ opacity: currentStep === 0 ? 0.5 : 1 }}
+          >
+            ← Previous Step
+          </Btn>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {steps.map((s, i) => (
+              <div
+                key={s.id}
+                onClick={() => setCurrentStep(i)}
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  backgroundColor: i === currentStep ? GOLD : '#e0e0e0',
+                  cursor: 'pointer'
+                }}
+              />
+            ))}
+          </div>
+          <Btn
+            primary
+            onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+            style={{ opacity: currentStep === steps.length - 1 ? 0.5 : 1 }}
+          >
+            Next Step →
+          </Btn>
+        </div>
+      </Card>
+
+      {/* Key Benefits */}
+      <Card style={{ padding: 24, marginTop: 20, backgroundColor: '#f8f9fa' }}>
+        <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>Why This Process Matters</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+          {[
+            ['🛡️', 'Trust & Safety', 'NIN verification prevents fraud and builds buyer confidence'],
+            ['📊', 'Tax Visibility', 'Formal registration enables government revenue tracking'],
+            ['💰', 'Secure Payments', 'Bank linking ensures sellers receive funds safely'],
+            ['🏆', 'Credibility', 'Verified badges increase sales by 3x on average']
+          ].map(([icon, title, desc]) => (
+            <div key={title} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
+              <div style={{ fontSize: 13, fontWeight: 'bold', color: NAVY, marginBottom: 4 }}>{title}</div>
+              <div style={{ fontSize: 11, color: '#666', lineHeight: 1.4 }}>{desc}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
 const Dashboard = ({ setScreen }) => {
   const revenue = useCounter(18400000);
   const tradersCount = useCounter(2847);
@@ -2366,6 +2859,7 @@ export default function App() {
         {screen === 'operating' && <OperatingModel setScreen={setScreen} />}
         {screen === 'next-steps' && <NextSteps setScreen={setScreen} />}
         {screen === 'ai-platform' && <AIPlatform setScreen={setScreen} />}
+        {screen === 'onboarding' && <SellerOnboarding setScreen={setScreen} />}
         {screen === 'home' && <Home setScreen={setScreen} setCat={setCat} />}
         {screen === 'listings' && <Listings setScreen={setScreen} setSeller={setSeller} cart={cart} setCart={setCart} cat={cat} />}
         {screen === 'seller' && <Seller setScreen={setScreen} seller={seller} cart={cart} setCart={setCart} />}
