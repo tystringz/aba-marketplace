@@ -1743,12 +1743,40 @@ const AISearchBox = ({ setScreen, setCat }) => {
     }, 1200);
   };
 
-  const sampleQueries = [
-    { text: "I need wedding shoes size 43", lang: 'english' },
-    { text: "Achọrọ m akpa leather", lang: 'igbo' },
-    { text: "Bulk palm slippers for my shop", lang: 'english' },
-    { text: "Show me bags under ₦20,000", lang: 'english' },
-  ];
+  const sampleQueriesByLang = {
+    english: [
+      "I need wedding shoes size 43",
+      "Show me leather bags under ₦20,000",
+      "Bulk order 50 palm slippers",
+      "Office shoes for men, black"
+    ],
+    igbo: [
+      "Achọrọ m akpụkpọ ụkwụ maka agbamakwụkwọ",
+      "Gosi m akpa leather",
+      "Akpụkpọ ụkwụ nwoke size 43",
+      "Akwa maka ọrụ"
+    ],
+    yoruba: [
+      "Mo nilo bata fun igbeyawo size 43",
+      "Fi bag awọ han mi",
+      "Bata okunrin dudu fun ọfiisi",
+      "Aso ibile fun ayeye"
+    ],
+    hausa: [
+      "Ina bukatar takalmi na bikin aure size 43",
+      "Nuna mini jaka na fata",
+      "Takalmin maza bakar fata",
+      "Riga na ofis"
+    ],
+    pidgin: [
+      "I wan buy wedding shoe size 43",
+      "Show me leather bag abeg",
+      "I need bulk slippers for my shop",
+      "Black shoe for office work"
+    ]
+  };
+
+  const sampleQueries = sampleQueriesByLang[selectedLang] || sampleQueriesByLang.english;
 
   return (
     <Card style={{ marginBottom: 24, padding: 0, overflow: 'hidden', border: `3px solid ${GOLD}` }}>
@@ -1799,7 +1827,9 @@ const AISearchBox = ({ setScreen, setCat }) => {
             onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             placeholder={
               selectedLang === 'igbo' ? "Gịnị ka ị chọrọ? (e.g., Achọrọ m akpụkpọ ụkwụ...)" :
-              selectedLang === 'pidgin' ? "Wetin you dey find? (e.g., I need shoe for wedding...)" :
+              selectedLang === 'yoruba' ? "Kini o n wa? (e.g., Mo nilo bata fun igbeyawo...)" :
+              selectedLang === 'hausa' ? "Me kake nema? (e.g., Ina bukatar takalmi...)" :
+              selectedLang === 'pidgin' ? "Wetin you dey find? (e.g., I wan buy shoe...)" :
               "What are you looking for? (e.g., I need wedding shoes size 43...)"
             }
             style={{
@@ -1834,10 +1864,10 @@ const AISearchBox = ({ setScreen, setCat }) => {
         {/* Sample Queries */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: results ? 20 : 0 }}>
           <span style={{ fontSize: 12, color: '#666', marginRight: 4 }}>Try:</span>
-          {sampleQueries.map((sq, i) => (
+          {sampleQueries.map((text, i) => (
             <button
               key={i}
-              onClick={() => { setQuery(sq.text); setSelectedLang(sq.lang); }}
+              onClick={() => setQuery(text)}
               style={{
                 padding: '6px 12px',
                 backgroundColor: '#f0f0f0',
@@ -1848,7 +1878,7 @@ const AISearchBox = ({ setScreen, setCat }) => {
                 cursor: 'pointer'
               }}
             >
-              "{sq.text}"
+              "{text}"
             </button>
           ))}
         </div>
