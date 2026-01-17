@@ -9,6 +9,56 @@
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+      /* Mobile Responsive Overrides */
+      @media (max-width: 768px) {
+        #root > div {
+          padding: 8px !important;
+        }
+
+        #root > div > div {
+          max-width: 100% !important;
+          padding-left: 8px !important;
+          padding-right: 8px !important;
+        }
+
+        /* All grid containers become 2-column max */
+        #root div[style*="grid"] {
+          grid-template-columns: repeat(2, 1fr) !important;
+          gap: 8px !important;
+        }
+
+        /* All flex containers wrap */
+        #root div[style*="flex"] {
+          flex-wrap: wrap !important;
+        }
+
+        /* Images responsive */
+        #root img {
+          max-width: 100% !important;
+          height: auto !important;
+        }
+
+        /* Buttons smaller */
+        #root button {
+          font-size: 12px !important;
+          padding: 8px 12px !important;
+        }
+      }
+
+      /* Phone screens */
+      @media (max-width: 480px) {
+        #root div[style*="grid"] {
+          grid-template-columns: 1fr !important;
+        }
+
+        #root button {
+          font-size: 11px !important;
+          padding: 6px 10px !important;
+          width: 100%;
+          margin-bottom: 4px;
+        }
+      }
     </style>
   </head>
   <body>
