@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// RESPONSIVE HOOK
+// ═══════════════════════════════════════════════════════════════════════════════
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return isMobile;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // ABA DIGITAL MARKETPLACE - GOVERNMENT PRESENTATION DEMO
 // Updated with research-backed statistics from comprehensive market analysis
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -315,38 +330,39 @@ const LanguageSelector = ({ selected, onChange }) => (
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const Nav = ({ screen, setScreen, cart }) => (
+const Nav = ({ screen, setScreen, cart, isMobile }) => (
   <div style={{ backgroundColor: NAVY, padding: '0', color: WHITE }}>
     {/* State Banner Strip */}
     <div style={{
       background: 'linear-gradient(90deg, #006400 0%, #228B22 100%)',
-      padding: '6px 24px',
+      padding: isMobile ? '4px 12px' : '6px 24px',
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      fontSize: 10
+      fontSize: isMobile ? 9 : 10
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 4 : 8 }}>
         <span>🦁</span>
-        <span style={{ fontWeight: 'bold' }}>ABIA STATE GOVERNMENT</span>
-        <span style={{ opacity: 0.8 }}>• God's Own State</span>
+        <span style={{ fontWeight: 'bold' }}>ABIA STATE{!isMobile && ' GOVERNMENT'}</span>
+        {!isMobile && <span style={{ opacity: 0.8 }}>• God's Own State</span>}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span>🇳🇬 Nigeria</span>
+        <span>🇳🇬{!isMobile && ' Nigeria'}</span>
       </div>
     </div>
 
     {/* Main Navigation */}
-    <div style={{ padding: '12px 24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer' }} onClick={() => setScreen('research')}>
+    <div style={{ padding: isMobile ? '8px 12px' : '12px 24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 8 : 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, cursor: 'pointer' }} onClick={() => setScreen('research')}>
           {/* Mini Governor Photo in Nav */}
           <div style={{
-            width: 44,
-            height: 44,
+            width: isMobile ? 36 : 44,
+            height: isMobile ? 36 : 44,
             borderRadius: '50%',
             border: `2px solid ${GOLD}`,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            flexShrink: 0
           }}>
             <img
               src="/images/governor-otti.jpg"
@@ -355,32 +371,32 @@ const Nav = ({ screen, setScreen, cart }) => (
             />
           </div>
           <div>
-            <div style={{ fontWeight: 'bold', fontSize: 18 }}>ABA DIGITAL MARKETPLACE</div>
-            <div style={{ fontSize: 10, opacity: 0.8 }}>An Initiative of His Excellency Dr. Alex Otti, OFR</div>
+            <div style={{ fontWeight: 'bold', fontSize: isMobile ? 14 : 18 }}>ABA {isMobile ? 'MARKETPLACE' : 'DIGITAL MARKETPLACE'}</div>
+            {!isMobile && <div style={{ fontSize: 10, opacity: 0.8 }}>An Initiative of His Excellency Dr. Alex Otti, OFR</div>}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-          <LiveIndicator />
+        <div style={{ display: 'flex', gap: isMobile ? 8 : 12, alignItems: 'center' }}>
+          {!isMobile && <LiveIndicator />}
           {cart.length > 0 && (
-            <button onClick={() => setScreen('checkout')} style={{ backgroundColor: GOLD, color: WHITE, border: 'none', padding: '8px 16px', borderRadius: 6, fontWeight: 'bold', cursor: 'pointer' }}>Cart ({cart.length})</button>
+            <button onClick={() => setScreen('checkout')} style={{ backgroundColor: GOLD, color: WHITE, border: 'none', padding: isMobile ? '6px 10px' : '8px 16px', borderRadius: 6, fontWeight: 'bold', cursor: 'pointer', fontSize: isMobile ? 11 : 14 }}>Cart ({cart.length})</button>
           )}
         </div>
       </div>
     </div>
-    <div style={{ display: 'flex', gap: 12, padding: '12px 24px', fontSize: 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+    <div style={{ display: 'flex', gap: isMobile ? 6 : 12, padding: isMobile ? '8px 12px' : '12px 24px', fontSize: isMobile ? 9 : 11, flexWrap: 'wrap', borderTop: '1px solid rgba(255,255,255,0.2)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
       {[
-        ['research', '🏛️ Overview'],
-        ['why-aba', '1. Why Aba'],
-        ['quick-wins', '2. Quick Wins'],
-        ['pilot', '3. Pilot Ask'],
-        ['operating', '4. Sustainability'],
-        ['next-steps', '5. Next Steps'],
-        ['ai-platform', '🤖 AI Platform'],
-        ['home', 'Demo: Home'],
-        ['listings', 'Products'],
-        ['seller', 'Sellers'],
-        ['dashboard', '📊 Dashboard'],
-        ['memory', 'Legacy']
+        ['research', isMobile ? '🏛️' : '🏛️ Overview'],
+        ['why-aba', isMobile ? '1️⃣' : '1. Why Aba'],
+        ['quick-wins', isMobile ? '2️⃣' : '2. Quick Wins'],
+        ['pilot', isMobile ? '3️⃣' : '3. Pilot Ask'],
+        ['operating', isMobile ? '4️⃣' : '4. Sustainability'],
+        ['next-steps', isMobile ? '5️⃣' : '5. Next Steps'],
+        ['ai-platform', '🤖'],
+        ['home', isMobile ? '🏠' : 'Demo: Home'],
+        ['listings', isMobile ? '📦' : 'Products'],
+        ['seller', isMobile ? '👤' : 'Sellers'],
+        ['dashboard', '📊'],
+        ['memory', isMobile ? '📜' : 'Legacy']
       ].map(([id, label]) => (
         <span key={id} onClick={() => setScreen(id)} style={{ cursor: 'pointer', opacity: screen === id ? 1 : 0.7, fontWeight: screen === id ? 'bold' : 'normal', borderBottom: screen === id ? `2px solid ${GOLD}` : 'none', paddingBottom: 4 }}>{label}</span>
       ))}
@@ -2321,11 +2337,12 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [cat, setCat] = useState('all');
   const [seller, setSeller] = useState(traders[0]);
+  const isMobile = useIsMobile();
 
   return (
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', maxWidth: 1000, margin: '0 auto', backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
-      <Nav screen={screen} setScreen={setScreen} cart={cart} />
-      <div style={{ padding: 24 }}>
+      <Nav screen={screen} setScreen={setScreen} cart={cart} isMobile={isMobile} />
+      <div style={{ padding: isMobile ? 12 : 24 }}>
         {screen === 'research' && <ResearchScreen setScreen={setScreen} />}
         {screen === 'why-aba' && <WhyAba setScreen={setScreen} />}
         {screen === 'quick-wins' && <QuickWins setScreen={setScreen} />}
