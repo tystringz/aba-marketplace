@@ -1033,10 +1033,10 @@ const OperatingModel = ({ setScreen }) => (
       <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>💰 PATH TO SUSTAINABILITY</div>
       <div style={{ display: 'flex', gap: 20 }}>
         {[
-          { source: 'Transaction Levy', rate: '1-1.5%', potential: '₦20-30M/yr', desc: 'On marketplace transactions' },
-          { source: 'Registration Fees', rate: '₦2-5K', potential: '₦10-20M/yr', desc: 'Annual trader verification' },
-          { source: 'Premium Listings', rate: '₦1-3K/mo', potential: '₦10-15M/yr', desc: 'Featured placement' },
-          { source: 'Data Services', rate: 'Variable', potential: '₦5-10M/yr', desc: 'Market reports, analytics' }
+          { source: 'Transaction Levy', rate: '1-1.5%', potential: '₦720M-1.4B/yr', desc: 'On ₦144B marketplace transactions' },
+          { source: 'Registration Fees', rate: '₦5-10K', potential: '₦50-100M/yr', desc: 'Annual trader verification (37K shops)' },
+          { source: 'Premium Listings', rate: '₦5-15K/mo', potential: '₦30-60M/yr', desc: 'Featured placement & promoted products' },
+          { source: 'Data Services', rate: 'Variable', potential: '₦20-40M/yr', desc: 'Market reports, buyer analytics, trade data' }
         ].map((r, i) => (
           <div key={i} style={{ flex: 1, padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
             <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY }}>{r.source}</div>
@@ -1046,8 +1046,8 @@ const OperatingModel = ({ setScreen }) => (
         ))}
       </div>
       <div style={{ marginTop: 20, padding: 16, backgroundColor: '#f0f9f0', border: '2px solid #28a745', borderRadius: 8, textAlign: 'center' }}>
-        <div style={{ fontSize: 14, fontWeight: 'bold', color: SUCCESS }}>PROJECTED BREAK-EVEN: MONTH 18-24</div>
-        <div style={{ fontSize: 13, color: '#444', marginTop: 4 }}>Platform generates enough revenue to cover operating costs</div>
+        <div style={{ fontSize: 14, fontWeight: 'bold', color: SUCCESS }}>PROJECTED BREAK-EVEN: MONTH 12-18</div>
+        <div style={{ fontSize: 13, color: '#444', marginTop: 4 }}>At just 0.5% capture of ₦144B trade volume, the platform covers all operating costs</div>
       </div>
     </Card>
 
