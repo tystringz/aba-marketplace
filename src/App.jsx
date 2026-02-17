@@ -1051,6 +1051,74 @@ const OperatingModel = ({ setScreen }) => (
       </div>
     </Card>
 
+    {/* Cost Estimates */}
+    <Card style={{ marginBottom: 24, padding: 24, border: `2px solid ${NAVY}` }}>
+      <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>📊 ESTIMATED OPERATING COSTS (ANNUAL)</div>
+      <div style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>Post-pilot steady-state costs to run the marketplace at scale</div>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
+        {[
+          {
+            icon: '🚚', title: 'Logistics',
+            total: '₦80-150M/yr',
+            items: [
+              'Fleet acquisition & last-mile delivery (bikes, vans)',
+              'Warehouse & sorting hub(s) at Ariaria',
+              'Cold chain & packaging infrastructure',
+              'Dispatch riders & operations staff (50-100)',
+              'Tracking & inventory management system',
+              'Interstate shipping partnerships (Lagos, PH, Abuja)'
+            ]
+          },
+          {
+            icon: '📣', title: 'Marketing',
+            total: '₦40-70M/yr',
+            items: [
+              'Market activation teams across Aba zones',
+              'Trader onboarding campaigns & incentives',
+              'Radio, TV & print across SE Nigeria',
+              'Social media, influencer & content creation',
+              'Referral programs & loyalty rewards',
+              'Community events & town halls'
+            ]
+          },
+          {
+            icon: '📺', title: 'Advertisement',
+            total: '₦30-50M/yr',
+            items: [
+              'National "Made in Aba" brand campaign',
+              'Digital ads (Google, Meta, TikTok) — national reach',
+              'Billboard & transit ads across major cities',
+              'Trade fair & exhibition presence (Lagos, Kano, Abuja)',
+              'International buyer outreach (diaspora & export)',
+              'PR & media placement'
+            ]
+          }
+        ].map((cat, i) => (
+          <div key={i} style={{ flex: 1, padding: 20, backgroundColor: '#fafafa', border: '1px solid #e0e0e0', borderRadius: 12 }}>
+            <div style={{ fontSize: 28, marginBottom: 8 }}>{cat.icon}</div>
+            <div style={{ fontSize: 15, fontWeight: 'bold', color: NAVY }}>{cat.title}</div>
+            <div style={{ fontSize: 22, fontWeight: 'bold', color: GOLD, margin: '8px 0' }}>{cat.total}</div>
+            <ul style={{ fontSize: 12, color: '#555', lineHeight: 1.8, paddingLeft: 16, margin: 0 }}>
+              {cat.items.map((item, j) => <li key={j}>{item}</li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 1, padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: '#666' }}>Total Annual Operating Cost</div>
+          <div style={{ fontSize: 24, fontWeight: 'bold', color: NAVY }}>₦150-270M/yr</div>
+        </div>
+        <div style={{ flex: 1, padding: 16, backgroundColor: '#f0f9f0', border: `2px solid ${SUCCESS}`, borderRadius: 8, textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: '#666' }}>Projected Annual Revenue (Year 2-3)</div>
+          <div style={{ fontSize: 24, fontWeight: 'bold', color: SUCCESS }}>₦500M-1.4B/yr</div>
+        </div>
+      </div>
+      <div style={{ marginTop: 16, padding: 12, backgroundColor: '#fff8e1', borderRadius: 8, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, color: '#856404' }}>💡 Logistics costs decrease 20-30% as volume scales — delivery network becomes self-funding via fees</div>
+      </div>
+    </Card>
+
     {/* Access for All */}
     <Card style={{ marginBottom: 24, padding: 24, borderLeft: `6px solid ${SUCCESS}` }}>
       <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>📱 ACCESS FOR ALL TRADERS</div>
