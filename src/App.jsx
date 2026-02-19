@@ -130,37 +130,23 @@ const Badge = ({ children, gold, success, danger, green }) => (
   }}>{children}</span>
 );
 
-// Stringz Technologies Brand Mark
-const StringzLogo = ({ size = 'small' }) => {
+// Stringz Technologies Brand Mark (uses actual logo assets)
+const StringzLogo = ({ size = 'small', variant = 'dark' }) => {
   const isLarge = size === 'large';
+  const logoSrc = variant === 'white' ? '/images/stringz-logo-full-white.svg' : '/images/stringz-logo-full.svg';
+  const iconSrc = variant === 'white' ? '/images/stringz-icon-white.svg' : '/images/stringz-icon.svg';
+  const useIcon = size === 'icon';
   return (
-    <div style={{
-      display: 'inline-flex',
-      alignItems: 'center',
-      gap: isLarge ? 10 : 6,
-    }}>
-      <div style={{
-        width: isLarge ? 28 : 18,
-        height: isLarge ? 28 : 18,
-        background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
-        borderRadius: isLarge ? 7 : 4,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: WHITE,
-        fontSize: isLarge ? 14 : 9,
-        fontWeight: 'bold',
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        letterSpacing: -0.5
-      }}>S</div>
-      <span style={{
-        fontSize: isLarge ? 14 : 11,
-        fontWeight: 'bold',
-        color: isLarge ? STRINGZ_INDIGO : 'inherit',
-        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
-        letterSpacing: -0.3
-      }}>Stringz Technologies</span>
-    </div>
+    <img
+      src={useIcon ? iconSrc : logoSrc}
+      alt="Stringz Technologies"
+      style={{
+        height: useIcon ? 24 : isLarge ? 32 : 20,
+        width: 'auto',
+        display: 'inline-block',
+        verticalAlign: 'middle',
+      }}
+    />
   );
 };
 
@@ -1097,19 +1083,7 @@ const OperatingModel = ({ setScreen }) => (
         </div>
         <div style={{ flex: 1, padding: 20, backgroundColor: WHITE, border: `2px solid ${STRINGZ_INDIGO}`, borderRadius: 12, textAlign: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
-            <div style={{
-              width: 48,
-              height: 48,
-              background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
-              borderRadius: 12,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: WHITE,
-              fontSize: 24,
-              fontWeight: 'bold',
-              fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif"
-            }}>S</div>
+            <img src="/images/stringz-icon.svg" alt="Stringz Technologies" style={{ width: 48, height: 48 }} />
           </div>
           <div style={{ fontSize: 18, fontWeight: 'bold', color: STRINGZ_INDIGO }}>Stringz Technologies</div>
           <div style={{ fontSize: 13, color: GOLD, marginTop: 8 }}>TECHNICAL DESIGN PARTNER</div>
@@ -1124,18 +1098,7 @@ const OperatingModel = ({ setScreen }) => (
         </div>
         <div style={{ padding: 16, backgroundColor: '#e3f2fd', borderRadius: 8, border: `1px solid ${STRINGZ_INDIGO}40` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <div style={{
-              width: 22,
-              height: 22,
-              background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
-              borderRadius: 5,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: WHITE,
-              fontSize: 11,
-              fontWeight: 'bold'
-            }}>S</div>
+            <img src="/images/stringz-icon.svg" alt="Stringz" style={{ width: 22, height: 22 }} />
             <div style={{ fontSize: 13, fontWeight: 'bold', color: STRINGZ_INDIGO }}>TECHNICAL PARTNER: STRINGZ TECHNOLOGIES</div>
           </div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>Stringz Technologies independently researched, designed, and developed this proposal and platform concept — investing their own resources to demonstrate feasibility. This level of commitment ensures alignment with project success.</div>
