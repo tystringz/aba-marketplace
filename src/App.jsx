@@ -28,6 +28,9 @@ const SUCCESS = '#28a745';
 const WHITE = '#ffffff';
 const DANGER = '#dc3545';
 
+// STRINGZ TECHNOLOGIES BRAND
+const STRINGZ_INDIGO = '#5232F9';
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // REAL STATISTICS FROM RESEARCH (Sources: Wikipedia, Techpoint, ICIR, ThisDay)
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -127,6 +130,40 @@ const Badge = ({ children, gold, success, danger, green }) => (
   }}>{children}</span>
 );
 
+// Stringz Technologies Brand Mark
+const StringzLogo = ({ size = 'small' }) => {
+  const isLarge = size === 'large';
+  return (
+    <div style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: isLarge ? 10 : 6,
+    }}>
+      <div style={{
+        width: isLarge ? 28 : 18,
+        height: isLarge ? 28 : 18,
+        background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
+        borderRadius: isLarge ? 7 : 4,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: WHITE,
+        fontSize: isLarge ? 14 : 9,
+        fontWeight: 'bold',
+        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+        letterSpacing: -0.5
+      }}>S</div>
+      <span style={{
+        fontSize: isLarge ? 14 : 11,
+        fontWeight: 'bold',
+        color: isLarge ? STRINGZ_INDIGO : 'inherit',
+        fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+        letterSpacing: -0.3
+      }}>Stringz Technologies</span>
+    </div>
+  );
+};
+
 // Made in Aba Premium Badge
 const MadeInAbaBadge = ({ size = 'small' }) => (
   <div style={{
@@ -214,28 +251,42 @@ const CatIcon = ({ name, size = 60 }) => {
   );
 };
 
-const GovPhoto = ({ size = 100 }) => (
-  <div style={{
-    width: size,
-    height: size,
-    borderRadius: '50%',
-    border: `4px solid ${GOLD}`,
-    backgroundColor: NAVY,
-    boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
-    overflow: 'hidden'
-  }}>
-    <img
-      src="/images/governor-otti.jpg"
-      alt="Gov. Alex Otti, OFR - Executive Governor of Abia State"
-      style={{
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        objectPosition: 'center 15%'
-      }}
-    />
-  </div>
-);
+const GovPhoto = ({ size = 100 }) => {
+  const [imgError, setImgError] = useState(false);
+  return (
+    <div style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      border: `4px solid ${GOLD}`,
+      backgroundColor: NAVY,
+      boxShadow: '0 4px 16px rgba(0,0,0,0.3)',
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      {imgError ? (
+        <div style={{ textAlign: 'center', color: WHITE }}>
+          <div style={{ fontSize: size * 0.28, fontWeight: 'bold' }}>AO</div>
+          <div style={{ fontSize: size * 0.1, color: GOLD, marginTop: -2 }}>GOV</div>
+        </div>
+      ) : (
+        <img
+          src="/images/governor-otti.jpg"
+          alt="Gov. Alex Otti, OFR - Executive Governor of Abia State"
+          onError={() => setImgError(true)}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition: 'center 15%'
+          }}
+        />
+      )}
+    </div>
+  );
+};
 
 const TrustBadges = () => (
   <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', padding: '16px 0', borderTop: '1px solid #eee', borderBottom: '1px solid #eee', margin: '20px 0' }}>
@@ -356,20 +407,7 @@ const Nav = ({ screen, setScreen, cart, isMobile }) => (
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 8 : 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, cursor: 'pointer' }} onClick={() => setScreen('research')}>
           {/* Mini Governor Photo in Nav */}
-          <div style={{
-            width: isMobile ? 36 : 44,
-            height: isMobile ? 36 : 44,
-            borderRadius: '50%',
-            border: `2px solid ${GOLD}`,
-            overflow: 'hidden',
-            flexShrink: 0
-          }}>
-            <img
-              src="/images/governor-otti.jpg"
-              alt="Gov. Otti"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 15%' }}
-            />
-          </div>
+          <GovPhoto size={isMobile ? 36 : 44} />
           <div>
             <div style={{ fontWeight: 'bold', fontSize: isMobile ? 14 : 18 }}>ABA {isMobile ? 'MARKETPLACE' : 'DIGITAL MARKETPLACE'}</div>
             {!isMobile && <div style={{ fontSize: 10, opacity: 0.8 }}>An Initiative of His Excellency Dr. Alex Otti, OFR</div>}
@@ -507,10 +545,14 @@ const ResearchScreen = ({ setScreen }) => (
               A proposal to digitize Aba's ₦144 billion marketplace — creating Nigeria's first
               AI-powered, government-backed trading platform that speaks Igbo, Yoruba, Hausa, and Pidgin.
             </div>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
               <Badge gold>🏛️ GADA Initiative</Badge>
               <Badge success>🤖 AI-Powered</Badge>
               <Badge>🇳🇬 Made in Abia</Badge>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 16, opacity: 0.85, fontSize: 11 }}>
+              <span>Concept & Platform Design by</span>
+              <StringzLogo size="small" />
             </div>
           </div>
         </div>
@@ -939,40 +981,74 @@ const PilotAsk = ({ setScreen }) => (
 
     {/* Budget */}
     <Card style={{ marginBottom: 24, padding: 24, border: `3px solid ${GOLD}` }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>PILOT INVESTMENT</div>
-          <div style={{ fontSize: 14, color: '#666' }}>All-inclusive: platform, onboarding, training, support, reporting</div>
+          <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>PILOT INVESTMENT — DETAILED BREAKDOWN</div>
+          <div style={{ fontSize: 14, color: '#666' }}>90-day all-inclusive budget with line-item transparency</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦35-50M</div>
+          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦45M</div>
           <div style={{ fontSize: 14, color: GOLD, fontWeight: 'bold' }}>90-day pilot budget</div>
         </div>
       </div>
-      <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-        {[
-          { item: 'Platform Development', pct: '40%' },
-          { item: 'Trader Onboarding', pct: '25%' },
-          { item: 'Training & Support', pct: '20%' },
-          { item: 'Contingency', pct: '15%' }
-        ].map((b, i) => (
-          <div key={i} style={{ textAlign: 'center', padding: 12, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-            <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY }}>{b.pct}</div>
-            <div style={{ fontSize: 12, color: '#666' }}>{b.item}</div>
+
+      {/* Detailed Line Items */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+        <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🖥️ Platform Development — ₦18M (40%)</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
+            Web & mobile app development: ₦8M<br />
+            AI/WhatsApp integration: ₦4M<br />
+            Payment & escrow system: ₦3M<br />
+            Cloud hosting & infrastructure (3 months): ₦1.5M<br />
+            Security audit & NDPR compliance: ₦1.5M
           </div>
-        ))}
+        </div>
+        <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>👥 Trader Onboarding — ₦11.25M (25%)</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
+            Field agents (20 staff × 3 months): ₦4.5M<br />
+            Product photography equipment & setup: ₦2M<br />
+            NIN verification integration costs: ₦1.5M<br />
+            Market activation & launch events: ₦1.75M<br />
+            Trader incentives (first 500 free listing): ₦1.5M
+          </div>
+        </div>
+        <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🎓 Training & Support — ₦9M (20%)</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
+            GADA operations team (5 staff × 3 months): ₦3.75M<br />
+            Trader training workshops (20 sessions): ₦2M<br />
+            Help desk & customer support setup: ₦1.5M<br />
+            Monitoring, reporting & analytics: ₦1.75M
+          </div>
+        </div>
+        <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🛡️ Contingency — ₦6.75M (15%)</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
+            Scope adjustments & unforeseen costs: ₦3M<br />
+            Additional technical requirements: ₦2M<br />
+            Emergency support & bug fixes: ₦1.75M
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: 16, backgroundColor: '#fff8e1', border: '2px solid #ffc107', borderRadius: 8, textAlign: 'center' }}>
+        <div style={{ fontSize: 13, fontWeight: 'bold', color: '#856404' }}>💡 MILESTONE-BASED PAYMENT</div>
+        <div style={{ fontSize: 12, color: '#444', marginTop: 4 }}>Government pays in 3 tranches: 40% at kick-off, 30% at Day 30 milestone, 30% at Day 90 delivery. No payment without verified deliverables.</div>
       </div>
     </Card>
 
     {/* Success Criteria */}
     <Card style={{ marginBottom: 24, padding: 24 }}>
-      <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>✅ PILOT SUCCESS CRITERIA</div>
+      <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>✅ PILOT SUCCESS CRITERIA (Day 90)</div>
       <div style={{ display: 'flex', gap: 20 }}>
         {[
-          { metric: '500+', label: 'Traders Onboarded', target: 'Minimum viable registry' },
-          { metric: '2,000+', label: 'Products Listed', target: 'Searchable catalog' },
-          { metric: '100+', label: 'Transactions', target: 'Payment system works' },
-          { metric: 'Live', label: 'Dashboard', target: 'Government visibility' }
+          { metric: '500+', label: 'Traders Onboarded', target: 'NIN-verified, searchable registry' },
+          { metric: '2,000+', label: 'Products Listed', target: 'Photographed, priced catalog' },
+          { metric: '500+', label: 'Transactions', target: 'End-to-end with escrow' },
+          { metric: '₦5M+', label: 'Transaction Volume', target: 'Proof of demand' },
+          { metric: 'Live', label: 'Gov Dashboard', target: 'Real-time analytics' }
         ].map((s, i) => (
           <div key={i} style={{ flex: 1, textAlign: 'center', padding: 16, border: `2px solid ${SUCCESS}`, borderRadius: 8 }}>
             <div style={{ fontSize: 28, fontWeight: 'bold', color: SUCCESS }}>{s.metric}</div>
@@ -1011,43 +1087,148 @@ const OperatingModel = ({ setScreen }) => (
           <div style={{ fontSize: 32, marginBottom: 8 }}>🏛️</div>
           <div style={{ fontSize: 18, fontWeight: 'bold' }}>Abia State Government</div>
           <div style={{ fontSize: 13, color: GOLD, marginTop: 8 }}>OWNER</div>
-          <div style={{ fontSize: 12, marginTop: 8, opacity: 0.8 }}>Full ownership of platform, data, trader registry. Permanent state asset.</div>
+          <div style={{ fontSize: 12, marginTop: 8, opacity: 0.8 }}>Full ownership of platform, data, and trader registry. All IP is state property — a permanent government asset.</div>
         </div>
         <div style={{ flex: 1, padding: 20, backgroundColor: GOLD, color: WHITE, borderRadius: 12, textAlign: 'center' }}>
           <div style={{ fontSize: 32, marginBottom: 8 }}>⚙️</div>
           <div style={{ fontSize: 18, fontWeight: 'bold' }}>GADA Program Office</div>
-          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 8 }}>OPERATOR</div>
-          <div style={{ fontSize: 12, marginTop: 8, opacity: 0.8 }}>Small team (3-5) under Greater Aba Development Agency. Day-to-day operations.</div>
+          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 8 }}>PROPOSED OPERATOR</div>
+          <div style={{ fontSize: 12, marginTop: 8, opacity: 0.8 }}>Dedicated team (3-5) under GADA mandate. Day-to-day operations, trader relations, reporting to Governor's office.</div>
         </div>
-        <div style={{ flex: 1, padding: 20, backgroundColor: WHITE, border: `2px solid ${NAVY}`, borderRadius: 12, textAlign: 'center' }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🤝</div>
-          <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY }}>Technical Partner</div>
-          <div style={{ fontSize: 13, color: GOLD, marginTop: 8 }}>BUILD + HANDOVER</div>
-          <div style={{ fontSize: 12, marginTop: 8, color: '#666' }}>Platform development, training, documentation. Full knowledge transfer.</div>
+        <div style={{ flex: 1, padding: 20, backgroundColor: WHITE, border: `2px solid ${STRINGZ_INDIGO}`, borderRadius: 12, textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+            <div style={{
+              width: 48,
+              height: 48,
+              background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
+              borderRadius: 12,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: WHITE,
+              fontSize: 24,
+              fontWeight: 'bold',
+              fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif"
+            }}>S</div>
+          </div>
+          <div style={{ fontSize: 18, fontWeight: 'bold', color: STRINGZ_INDIGO }}>Stringz Technologies</div>
+          <div style={{ fontSize: 13, color: GOLD, marginTop: 8 }}>TECHNICAL DESIGN PARTNER</div>
+          <div style={{ fontSize: 12, marginTop: 8, color: '#666' }}>Designed, researched, and developed this concept at own cost. Responsible for platform build, GADA team training, full documentation, and 6-month post-launch support.</div>
+          <a href="https://stringztechnologies.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: STRINGZ_INDIGO, marginTop: 8, display: 'inline-block', textDecoration: 'none' }}>stringztechnologies.com</a>
+        </div>
+      </div>
+      <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ padding: 16, backgroundColor: '#fff8e1', borderRadius: 8, border: '1px solid #ffc107' }}>
+          <div style={{ fontSize: 13, fontWeight: 'bold', color: '#856404', marginBottom: 4 }}>🏛️ GADA's MANDATE</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>GADA already oversees Aba's market redevelopment (Phase II A-Line). Digital marketplace is a natural extension of this mandate. Formal memo to assign GADA as operator is part of the MOU process.</div>
+        </div>
+        <div style={{ padding: 16, backgroundColor: '#e3f2fd', borderRadius: 8, border: `1px solid ${STRINGZ_INDIGO}40` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+            <div style={{
+              width: 22,
+              height: 22,
+              background: `linear-gradient(135deg, ${STRINGZ_INDIGO} 0%, #291AAC 100%)`,
+              borderRadius: 5,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: WHITE,
+              fontSize: 11,
+              fontWeight: 'bold'
+            }}>S</div>
+            <div style={{ fontSize: 13, fontWeight: 'bold', color: STRINGZ_INDIGO }}>TECHNICAL PARTNER: STRINGZ TECHNOLOGIES</div>
+          </div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>Stringz Technologies independently researched, designed, and developed this proposal and platform concept — investing their own resources to demonstrate feasibility. This level of commitment ensures alignment with project success.</div>
+          <a href="https://stringztechnologies.com" target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: STRINGZ_INDIGO, marginTop: 6, display: 'inline-block', textDecoration: 'none' }}>→ stringztechnologies.com</a>
         </div>
       </div>
     </Card>
 
-    {/* Revenue Model */}
+    {/* Revenue Streams */}
     <Card style={{ marginBottom: 24, padding: 24 }}>
-      <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>💰 PATH TO SUSTAINABILITY</div>
+      <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>💰 REVENUE STREAMS</div>
       <div style={{ display: 'flex', gap: 20 }}>
         {[
-          { source: 'Transaction Levy', rate: '1-1.5%', potential: '₦720M-1.4B/yr', desc: 'On ₦144B marketplace transactions' },
-          { source: 'Registration Fees', rate: '₦5-10K', potential: '₦50-100M/yr', desc: 'Annual trader verification (37K shops)' },
-          { source: 'Premium Listings', rate: '₦5-15K/mo', potential: '₦30-60M/yr', desc: 'Featured placement & promoted products' },
-          { source: 'Data Services', rate: 'Variable', potential: '₦20-40M/yr', desc: 'Market reports, buyer analytics, trade data' }
+          { source: 'Transaction Levy', rate: '1-1.5%', desc: 'On every digital transaction through the platform' },
+          { source: 'Registration Fees', rate: '₦5-10K/yr', desc: 'Annual trader verification fee (NIN-linked)' },
+          { source: 'Premium Listings', rate: '₦5-15K/mo', desc: 'Featured placement & promoted products' },
+          { source: 'Data & Logistics', rate: 'Variable', desc: 'Market reports, delivery fees, analytics' }
         ].map((r, i) => (
           <div key={i} style={{ flex: 1, padding: 16, border: '1px solid #ddd', borderRadius: 8 }}>
             <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY }}>{r.source}</div>
-            <div style={{ fontSize: 20, color: GOLD, fontWeight: 'bold', margin: '8px 0' }}>{r.potential}</div>
+            <div style={{ fontSize: 16, color: GOLD, fontWeight: 'bold', margin: '8px 0' }}>{r.rate}</div>
             <div style={{ fontSize: 12, color: '#666' }}>{r.desc}</div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 20, padding: 16, backgroundColor: '#f0f9f0', border: '2px solid #28a745', borderRadius: 8, textAlign: 'center' }}>
+    </Card>
+
+    {/* Three Revenue Scenarios */}
+    <Card style={{ marginBottom: 24, padding: 24, border: `3px solid ${GOLD}` }}>
+      <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>📊 REVENUE PROJECTIONS (3 Scenarios)</div>
+      <div style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>Based on ₦144B annual trade volume — projections assume gradual digital adoption over 3 years</div>
+      <div style={{ display: 'flex', gap: 16, marginBottom: 20 }}>
+        {[
+          {
+            scenario: 'Conservative',
+            capture: '5%',
+            tradeVol: '₦7.2B',
+            levy: '₦72-108M',
+            registration: '₦25-50M',
+            premium: '₦10-20M',
+            total: '₦107-178M/yr',
+            timeline: 'Year 1-2',
+            color: '#e3f2fd',
+            border: '#2196F3',
+            label: 'REALISTIC BASE'
+          },
+          {
+            scenario: 'Moderate',
+            capture: '15%',
+            tradeVol: '₦21.6B',
+            levy: '₦216-324M',
+            registration: '₦75-150M',
+            premium: '₦30-60M',
+            total: '₦321-534M/yr',
+            timeline: 'Year 2-3',
+            color: '#fff8e1',
+            border: GOLD,
+            label: 'GROWTH TARGET'
+          },
+          {
+            scenario: 'Optimistic',
+            capture: '30%',
+            tradeVol: '₦43.2B',
+            levy: '₦432-648M',
+            registration: '₦150-300M',
+            premium: '₦50-100M',
+            total: '₦632M-1.05B/yr',
+            timeline: 'Year 3-5',
+            color: '#e8f5e9',
+            border: SUCCESS,
+            label: 'FULL POTENTIAL'
+          }
+        ].map((s, i) => (
+          <div key={i} style={{ flex: 1, padding: 20, backgroundColor: s.color, border: `2px solid ${s.border}`, borderRadius: 12 }}>
+            <div style={{ fontSize: 10, fontWeight: 'bold', color: s.border, letterSpacing: 1, marginBottom: 4 }}>{s.label}</div>
+            <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>{s.scenario}</div>
+            <div style={{ fontSize: 12, color: '#444', marginBottom: 4 }}>Digital capture: <strong>{s.capture}</strong> of trade</div>
+            <div style={{ fontSize: 12, color: '#444', marginBottom: 12 }}>Digital volume: <strong>{s.tradeVol}</strong>/yr</div>
+            <div style={{ fontSize: 11, color: '#555', lineHeight: 1.8 }}>
+              Transaction levy: {s.levy}<br />
+              Registration fees: {s.registration}<br />
+              Premium + Data: {s.premium}
+            </div>
+            <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${s.border}` }}>
+              <div style={{ fontSize: 22, fontWeight: 'bold', color: NAVY }}>{s.total}</div>
+              <div style={{ fontSize: 11, color: '#666' }}>Timeline: {s.timeline}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ padding: 16, backgroundColor: '#f0f9f0', border: `2px solid ${SUCCESS}`, borderRadius: 8, textAlign: 'center' }}>
         <div style={{ fontSize: 14, fontWeight: 'bold', color: SUCCESS }}>PROJECTED BREAK-EVEN: MONTH 12-18</div>
-        <div style={{ fontSize: 13, color: '#444', marginTop: 4 }}>At just 0.5% capture of ₦144B trade volume, the platform covers all operating costs</div>
+        <div style={{ fontSize: 13, color: '#444', marginTop: 4 }}>Conservative scenario covers operating costs. Each percentage point of digital capture adds ~₦14-22M in annual levy revenue.</div>
       </div>
     </Card>
 
@@ -1196,14 +1377,16 @@ const NextSteps = ({ setScreen }) => (
       <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 16 }}>🛡️ RISK MITIGATION</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {[
-          { concern: 'What if it fails?', mitigation: '90-day pilot is reversible. Clear success criteria. No commitment to scale until proven.' },
-          { concern: 'How do we track progress?', mitigation: 'Weekly reports. Monthly reviews. Live dashboard access for government.' },
-          { concern: 'What about costs?', mitigation: 'Milestone-based payments. Government pays as deliverables arrive.' },
-          { concern: 'What happens after pilot?', mitigation: 'Full handover documentation. GADA team trained. Platform is state property.' },
+          { concern: 'What if the pilot fails?', mitigation: '90-day pilot is fully reversible. Clear success criteria defined upfront. No commitment to scale until results are proven. Milestone-based payment means government only pays for verified deliverables.' },
+          { concern: 'What if traders don\'t adopt?', mitigation: 'Adoption is de-risked through multiple channels: WhatsApp (already used daily), USSD (no internet needed), in-person market agents. Field team of 20 agents handles onboarding directly in Ariaria. Trader incentives for early adopters.' },
+          { concern: 'How do we track progress?', mitigation: 'Weekly written reports to Governor\'s office. Monthly reviews with GADA. Live dashboard gives government real-time visibility into traders, orders, and revenue from Day 1.' },
+          { concern: 'What about ongoing costs?', mitigation: 'Platform is designed to be self-sustaining through transaction levies and registration fees. Conservative scenario (5% capture) covers all operating costs by Month 12-18. Government never subsidizes beyond the pilot.' },
+          { concern: 'What if the tech partner underperforms?', mitigation: 'Competitive RFP ensures qualified selection. Milestone-based payments protect government — no delivery, no payment. All source code and data are state property from Day 1.' },
+          { concern: 'What happens after the pilot?', mitigation: 'Full handover documentation and trained GADA team. 6-month post-launch support from tech partner included. Platform IP belongs to Abia State — can be maintained by any competent team.' },
         ].map((item, i) => (
           <div key={i} style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
             <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>❓ {item.concern}</div>
-            <div style={{ fontSize: 13, color: '#444' }}>✓ {item.mitigation}</div>
+            <div style={{ fontSize: 13, color: '#444', lineHeight: 1.6 }}>✓ {item.mitigation}</div>
           </div>
         ))}
       </div>
@@ -1215,7 +1398,7 @@ const NextSteps = ({ setScreen }) => (
       <div style={{ display: 'flex', justifyContent: 'center', gap: 40, marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Investment</div>
-          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦35-50M</div>
+          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦45M</div>
         </div>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Duration</div>
@@ -1227,7 +1410,7 @@ const NextSteps = ({ setScreen }) => (
         </div>
       </div>
       <div style={{ fontSize: 16, color: '#444', marginBottom: 24 }}>
-        A low-risk pilot to prove the concept. If successful, scale to all of Ariaria and beyond.
+        A low-risk, milestone-based pilot to prove the concept. If successful, scale to all of Ariaria and beyond.
       </div>
       <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8, display: 'inline-block' }}>
         <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY }}>DECISION REQUESTED</div>
@@ -2487,8 +2670,9 @@ const SellerOnboarding = ({ setScreen }) => {
             <div style={{ fontSize: 14, opacity: 0.9, marginTop: 8 }}>7-step verification process ensuring trust and accountability</div>
           </div>
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 36, fontWeight: 'bold', color: GOLD }}>2,847</div>
-            <div style={{ fontSize: 12, opacity: 0.8 }}>Sellers Onboarded (Pilot)</div>
+            <div style={{ fontSize: 10, color: GOLD, letterSpacing: 1 }}>PILOT TARGET</div>
+            <div style={{ fontSize: 36, fontWeight: 'bold', color: GOLD }}>2,000</div>
+            <div style={{ fontSize: 12, opacity: 0.8 }}>Seller Target (90 Days)</div>
           </div>
         </div>
       </Card>
@@ -2754,7 +2938,7 @@ const Dashboard = ({ setScreen }) => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 28, fontWeight: 'bold', color: NAVY }}>🤖 AI-Powered Analytics Dashboard</div>
-          <div style={{ fontSize: 14, color: '#666' }}>Abia State Digital Economy Command Center</div>
+          <div style={{ fontSize: 14, color: '#666' }}>Abia State Digital Economy Command Center — Projected View</div>
         </div>
         <div style={{ display: 'flex', gap: 12 }}>
           <Btn small>📄 Export PDF</Btn>
@@ -2830,29 +3014,36 @@ const Dashboard = ({ setScreen }) => {
       </Card>
 
       <Card style={{ padding: 32, marginBottom: 24, background: `linear-gradient(135deg, ${NAVY} 0%, #001a4d 100%)`, color: WHITE, textAlign: 'center' }}>
-        <div style={{ fontSize: 16, marginBottom: 20, opacity: 0.9, letterSpacing: 1 }}>REVENUE POTENTIAL (Based on Research)</div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 40, flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 16, marginBottom: 20, opacity: 0.9, letterSpacing: 1 }}>PLATFORM REVENUE POTENTIAL (Based on Research)</div>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 32, flexWrap: 'wrap' }}>
           <div>
-            <div style={{ fontSize: 14, opacity: 0.7 }}>Abia IGR (2018)</div>
-            <div style={{ fontSize: 48, fontWeight: 'bold' }}>{fmtB(STATS.abiaIGR2018)}</div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>Total Aba Trade Volume</div>
+            <div style={{ fontSize: 42, fontWeight: 'bold' }}>{fmtB(STATS.annualTradeVolume)}/yr</div>
           </div>
-          <div style={{ fontSize: 48, opacity: 0.5 }}>→</div>
+          <div style={{ fontSize: 32, opacity: 0.5 }}>→</div>
           <div>
-            <div style={{ fontSize: 14, opacity: 0.7 }}>With Digital Commerce Layer</div>
-            <div style={{ fontSize: 64, fontWeight: 'bold', color: GOLD }}>₦50B+</div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>Conservative (5% digital capture)</div>
+            <div style={{ fontSize: 42, fontWeight: 'bold', color: '#90CAF9' }}>₦107-178M/yr</div>
+          </div>
+          <div style={{ fontSize: 32, opacity: 0.5 }}>→</div>
+          <div>
+            <div style={{ fontSize: 12, opacity: 0.7 }}>Full Potential (30% capture, Year 3-5)</div>
+            <div style={{ fontSize: 42, fontWeight: 'bold', color: GOLD }}>₦632M-1B/yr</div>
           </div>
         </div>
-        <div style={{ marginTop: 24, padding: 16, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, display: 'inline-block' }}>
-          <span style={{ fontSize: 14 }}>Market trade volume: </span>
-          <span style={{ fontSize: 24, fontWeight: 'bold', color: GOLD }}>{fmtB(STATS.annualTradeVolume)}/year</span>
+        <div style={{ marginTop: 24, padding: 16, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8 }}>
+          <div style={{ fontSize: 13, opacity: 0.9 }}>Methodology: 1-1.5% transaction levy + registration fees + premium listings. Revenue scales with trader adoption rate. See Sustainability screen for full 3-scenario breakdown.</div>
         </div>
       </Card>
 
+      <div style={{ padding: 12, backgroundColor: '#fff8e1', border: '2px solid #ffc107', borderRadius: 8, textAlign: 'center', marginBottom: 16 }}>
+        <div style={{ fontSize: 12, fontWeight: 'bold', color: '#856404' }}>⚠️ ILLUSTRATIVE PROJECTIONS — Numbers below represent targets for Year 1 operations, not actuals</div>
+      </div>
       <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-        <Stat large value={`₦${(revenue/1000000).toFixed(1)}M`} label="Demo Revenue" sub="Projection" />
-        <Stat large value={tradersCount.toLocaleString()} label="Demo Traders" sub="Target: 2,000 in pilot" />
-        <Stat large value={orders.toLocaleString()} label="Demo Orders" sub="Weekly projection" />
-        <Stat large value="89%" label="Target Fulfillment" />
+        <Stat large value={`₦${(revenue/1000000).toFixed(1)}M`} label="Projected Monthly Revenue" sub="Year 1 target" />
+        <Stat large value={tradersCount.toLocaleString()} label="Trader Target" sub="90-day pilot goal: 2,000" />
+        <Stat large value={orders.toLocaleString()} label="Projected Weekly Orders" sub="Based on 5% adoption" />
+        <Stat large value="89%" label="Fulfillment Target" />
       </div>
 
       <div style={{ display: 'flex', gap: 20, marginBottom: 24 }}>
@@ -3033,16 +3224,15 @@ export default function App() {
           flexWrap: 'wrap'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <span style={{ fontSize: 16 }}>💬</span>
-            <span>WhatsApp: +234 XXX XXX XXXX</span>
+            <span style={{ fontSize: 16 }}>🏛️</span>
+            <span>Greater Aba Development Agency (GADA)</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <span style={{ fontSize: 16 }}>📧</span>
-            <span>info@abamarketplace.gov.ng</span>
+            <span style={{ fontSize: 16 }}>📍</span>
+            <span>Abia State Government House, Umuahia</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-            <span style={{ fontSize: 16 }}>🌐</span>
-            <span>abamarketplace.gov.ng</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, opacity: 0.8, fontStyle: 'italic' }}>
+            <span>Contact details to be assigned upon project approval</span>
           </div>
         </div>
 
@@ -3050,6 +3240,12 @@ export default function App() {
         <div style={{ padding: '12px 24px', textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', fontSize: 10 }}>
           <div style={{ opacity: 0.6 }}>
             🦁 Abia State Government • God's Own State • 🇳🇬 Federal Republic of Nigeria
+          </div>
+          <div style={{ opacity: 0.7, marginTop: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            <span style={{ opacity: 0.7 }}>Platform concept, research & design by</span>
+            <a href="https://stringztechnologies.com" target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <StringzLogo size="small" />
+            </a>
           </div>
           <div style={{ opacity: 0.4, marginTop: 4 }}>
             Statistics sourced from: Wikipedia, Techpoint Africa, ICIR Nigeria, ThisDay Live, People of Abia
