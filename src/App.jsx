@@ -1053,7 +1053,7 @@ const PilotAsk = ({ setScreen }) => (
           <div style={{ fontSize: 14, color: '#666' }}>90-day all-inclusive budget with line-item transparency</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦45M</div>
+          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦95M</div>
           <div style={{ fontSize: 14, color: GOLD, fontWeight: 'bold' }}>90-day pilot budget</div>
         </div>
       </div>
@@ -1061,40 +1061,51 @@ const PilotAsk = ({ setScreen }) => (
       {/* Detailed Line Items */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🖥️ Platform Development — ₦18M (40%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🖥️ Platform Development & Infrastructure — ₦38M (40%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-            Web & mobile app development: ₦8M<br />
-            AI/WhatsApp integration: ₦4M<br />
-            Payment & escrow system: ₦3M<br />
-            Cloud hosting & infrastructure (3 months): ₦1.5M<br />
-            Security audit & NDPR compliance: ₦1.5M
+            Engineering team (3-4 developers × 3 months): ₦15M<br />
+            AI/WhatsApp Business API integration: ₦8M<br />
+            Payment gateway & escrow system: ₦5M<br />
+            NIN/NIMC verification API integration: ₦4M<br />
+            Cloud hosting, CDN & infrastructure: ₦3M<br />
+            Security audit & NDPR compliance: ₦3M
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>👥 Trader Onboarding — ₦11.25M (25%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>👥 Trader Onboarding & Field Operations — ₦22M (23%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-            Field agents (20 staff × 3 months): ₦4.5M<br />
-            Product photography equipment & setup: ₦2M<br />
-            NIN verification integration costs: ₦1.5M<br />
-            Market activation & launch events: ₦1.75M<br />
-            Trader incentives (first 500 free listing): ₦1.5M
+            Field agents (20 staff × 3 months): ₦9M<br />
+            Professional photography team & equipment: ₦4M<br />
+            NIN verification costs (per-trader processing): ₦3M<br />
+            Transportation & logistics across Aba markets: ₦3M<br />
+            Trader incentive program (first 500 free listing): ₦3M
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🎓 Training & Support — ₦9M (20%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🎓 Training, Support & Operations — ₦15M (16%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-            GADA operations team (5 staff × 3 months): ₦3.75M<br />
-            Trader training workshops (20 sessions): ₦2M<br />
-            Help desk & customer support setup: ₦1.5M<br />
-            Monitoring, reporting & analytics: ₦1.75M
+            GADA operations team (5 staff × 3 months): ₦5M<br />
+            Aba field office setup & equipment: ₦3M<br />
+            Trader training workshops (20+ sessions): ₦3M<br />
+            Help desk & customer support: ₦2M<br />
+            Monitoring, reporting & analytics: ₦2M
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🛡️ Contingency — ₦6.75M (15%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>📣 Marketing & Activation — ₦10M (11%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-            Scope adjustments & unforeseen costs: ₦3M<br />
-            Additional technical requirements: ₦2M<br />
-            Emergency support & bug fixes: ₦1.75M
+            Radio & media campaigns across Aba: ₦3M<br />
+            Market-level awareness & launch events: ₦3M<br />
+            Digital marketing & social media: ₦2M<br />
+            Printed materials & branded signage: ₦2M
+          </div>
+        </div>
+        <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8, gridColumn: '1 / -1' }}>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🛡️ Contingency & Risk Buffer — ₦10M (10%)</div>
+          <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
+            Scope adjustments & unforeseen costs: ₦4M<br />
+            API cost overruns & additional technical needs: ₦3M<br />
+            Emergency support & security patches: ₦3M
           </div>
         </div>
       </div>
@@ -1441,7 +1452,7 @@ const NextSteps = ({ setScreen }) => (
       <div style={{ display: 'flex', justifyContent: 'center', gap: 40, marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Investment</div>
-          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦45M</div>
+          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦95M</div>
         </div>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Duration</div>
