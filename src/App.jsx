@@ -672,6 +672,51 @@ const ResearchScreen = ({ setScreen }) => (
       <div style={{ fontSize: 12, color: '#666', textAlign: 'center', marginTop: 16 }}>Source: People of Abia, ThisDay Live, Official Government Communications</div>
     </Card>
 
+    {/* Trader Voices - Online Research */}
+    <Card style={{ marginBottom: 24, padding: 24, borderLeft: `6px solid ${GOLD}` }}>
+      <div style={{ fontSize: 18, fontWeight: 'bold', color: NAVY, marginBottom: 4 }}>🗣️ WHAT ABA TRADERS ARE SAYING</div>
+      <div style={{ fontSize: 12, color: '#666', marginBottom: 20 }}>Real quotes gathered from investigative journalism and industry reports — confirming the need this platform addresses</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+        {[
+          { quote: "To be able to sell our products, we were compelled to label them 'Made-in-China' because our customers believed Chinese shoes were superior.", name: "Joseph Nmeri", role: "Chairman, Power Line Shoe Manufacturers", pain: "BRAND & VISIBILITY", source: "Daily Trust" },
+          { quote: "Aba-made products are exported to Dubai and Italy, where they are given more touches and imported back to Nigeria as foreign shoes.", name: "Christian Okoro", role: "Chairman, Aba North Industrial Market", pain: "MARKET ACCESS", source: "Daily Trust" },
+          { quote: "If we're provided with automated machines and loans, we'll produce better shoes than Italy and Brazil.", name: "Deacon Obioma Daniel", role: "Chairman, Aba North Shoe Plaza", pain: "EQUIPMENT & FINANCE", source: "Independent NG" },
+          { quote: "With no machine I can produce 10 pairs a day, but with machines we can mass-produce. That's our major challenge.", name: "Joseph Chinedu", role: "Shoemaker, 31 years old", pain: "SCALING PRODUCTION", source: "Independent NG" },
+        ].map((item, i) => (
+          <div key={i} style={{ padding: 16, backgroundColor: '#fafafa', borderRadius: 8, border: '1px solid #eee' }}>
+            <div style={{ fontSize: 10, fontWeight: 'bold', color: GOLD, letterSpacing: 1, marginBottom: 8 }}>{item.pain}</div>
+            <div style={{ fontSize: 13, color: '#333', fontStyle: 'italic', lineHeight: 1.6, marginBottom: 12 }}>"{item.quote}"</div>
+            <div style={{ fontSize: 12, fontWeight: 'bold', color: NAVY }}>{item.name}</div>
+            <div style={{ fontSize: 11, color: '#666' }}>{item.role}</div>
+            <div style={{ fontSize: 10, color: '#999', marginTop: 4 }}>Source: {item.source}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* The Gap This Platform Fills */}
+      <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8, border: `2px solid ${NAVY}`, marginBottom: 16 }}>
+        <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 8 }}>📊 What the Data Tells Us</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+          {[
+            { stat: '56%', desc: 'of Nigerian MSMEs sell online ONLY through social media (no proper storefront)', source: 'GSMA 2023 Survey' },
+            { stat: '90%+', desc: 'of MSMEs who adopted e-commerce reported increased sales', source: 'GSMA Nigeria' },
+            { stat: '₦120B', desc: 'annual Aba shoe production value — largely invisible to online buyers', source: 'ICIR Nigeria' },
+          ].map((item, i) => (
+            <div key={i} style={{ textAlign: 'center', padding: 12 }}>
+              <div style={{ fontSize: 24, fontWeight: 'bold', color: NAVY }}>{item.stat}</div>
+              <div style={{ fontSize: 11, color: '#444', marginTop: 4 }}>{item.desc}</div>
+              <div style={{ fontSize: 9, color: '#999', marginTop: 4 }}>{item.source}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ padding: 16, backgroundColor: '#fff8e1', borderRadius: 8, border: '1px solid #ffc107' }}>
+        <div style={{ fontSize: 13, fontWeight: 'bold', color: '#856404', marginBottom: 4 }}>💡 THE PATTERN IS CLEAR</div>
+        <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>Aba traders have world-class products but zero digital infrastructure. They're forced to mislabel goods as foreign-made because there's no trusted "Made in Aba" platform. 56% of Nigerian small businesses sell only through social media — no verification, no buyer protection, no government visibility. This platform fills that gap.</div>
+      </div>
+    </Card>
+
     {/* Research Sources */}
     <Card style={{ marginBottom: 24, padding: 24 }}>
       <div style={{ fontSize: 16, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>📚 RESEARCH SOURCES CONSULTED</div>
@@ -681,10 +726,16 @@ const ResearchScreen = ({ setScreen }) => (
           'Kingmakers State of States Database',
           'Techpoint Africa - Aba Tech Scene',
           'ICIR Nigeria - Ariaria Power Investigation',
+          'ICIR Nigeria - ₦144B Aba Shoe Industry',
           'ThisDay Live - Ariaria Changing Face',
           'People of Abia - Government Updates',
           'Business Day - Governor Otti Initiatives',
-          'SATRA - Nigerian Army Footwear Orders'
+          'SATRA - Nigerian Army Footwear Orders',
+          'Daily Trust - Aba Shoemakers Report',
+          'Independent NG - Inside Aba Shoemaking',
+          'GSMA - E-Commerce Survey Nigeria 2023',
+          'Punch NG - Aba Leather Industry',
+          'PwC Nigeria - MSME Survey 2024'
         ].map((source, i) => (
           <div key={i} style={{ fontSize: 12, color: '#666', padding: 8, backgroundColor: '#f9f9f9', borderRadius: 4 }}>✓ {source}</div>
         ))}
@@ -764,6 +815,35 @@ const WhyAba = ({ setScreen }) => (
       <div style={{ fontSize: 20, fontWeight: 'bold', color: NAVY, textAlign: 'center', lineHeight: 1.6 }}>
         "A digital layer turns informal trade into visible economic infrastructure — <br/>
         <span style={{ color: GOLD }}>measurable, taxable, and investable.</span>"
+      </div>
+    </Card>
+
+    {/* Why Not Existing Platforms */}
+    <div style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: NAVY }}>WHY NOT JUST USE JUMIA OR INSTAGRAM?</div>
+    <Card style={{ marginBottom: 24, padding: 24 }}>
+      <div style={{ fontSize: 14, color: '#666', marginBottom: 16 }}>
+        Existing platforms weren't built for Aba's market. Here's why a state-owned digital layer is different:
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 12, marginBottom: 20 }}>
+        {[
+          { platform: 'Jumia / Konga', issue: 'High fees (15-25% commission). Traders lose margin. Platform owns the customer relationship. No government visibility into trade data.', color: DANGER },
+          { platform: 'Instagram / WhatsApp', issue: 'No escrow, no verification, no dispute resolution. Buyers can\'t trust unknown sellers. No data or tax infrastructure for government.', color: DANGER },
+          { platform: 'TradeDepot / B2B', issue: 'Designed for FMCG distribution, not artisan manufacturing. Doesn\'t serve leather, textiles, or garment makers.', color: DANGER },
+          { platform: 'Aba Marketplace', issue: 'State-backed verification via NIN. Low fees (3-5%). Government owns trade data. Escrow builds buyer trust. Purpose-built for artisan clusters.', color: SUCCESS }
+        ].map((item, i) => (
+          <div key={i} style={{ padding: 16, backgroundColor: i === 3 ? '#f0f9f0' : '#fff5f5', borderRadius: 8, border: `2px solid ${item.color}` }}>
+            <div style={{ fontSize: 14, fontWeight: 'bold', color: item.color, marginBottom: 8 }}>{item.platform}</div>
+            <div style={{ fontSize: 12, color: '#444', lineHeight: 1.6 }}>{item.issue}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ backgroundColor: LIGHT_NAVY, padding: 16, borderRadius: 8 }}>
+        <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 4 }}>THE KEY DIFFERENCE</div>
+        <div style={{ fontSize: 13, color: '#444', lineHeight: 1.6 }}>
+          Private platforms extract value from traders. A state-backed marketplace <strong>creates infrastructure</strong> —
+          a verified trader registry, transaction data for policy, automated levy collection, and a logistics backbone
+          that becomes a state asset. The governor doesn't just get a website. <strong>He gets economic visibility.</strong>
+        </div>
       </div>
     </Card>
 
