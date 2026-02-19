@@ -3177,6 +3177,120 @@ const Memory = ({ setScreen }) => (
 );
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PASSWORD GATE
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const ACCESS_CODE = 'StringzAbia2026';
+
+const PasswordGate = ({ children }) => {
+  const [authorized, setAuthorized] = useState(() => sessionStorage.getItem('aba_auth') === 'granted');
+  const [code, setCode] = useState('');
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (code === ACCESS_CODE) {
+      sessionStorage.setItem('aba_auth', 'granted');
+      setAuthorized(true);
+    } else {
+      setError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+      setTimeout(() => setError(false), 3000);
+    }
+  };
+
+  if (authorized) return children;
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      background: `linear-gradient(135deg, ${NAVY} 0%, #001a4a 50%, #000d2b 100%)`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      padding: 24
+    }}>
+      <div style={{
+        textAlign: 'center',
+        maxWidth: 420,
+        width: '100%',
+        animation: shake ? 'shake 0.5s ease-in-out' : 'none'
+      }}>
+        <style>{`
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+          }
+        `}</style>
+
+        <img src="/images/stringz-icon-white.svg" alt="Stringz Technologies" style={{ width: 64, height: 64, marginBottom: 24, opacity: 0.9 }} />
+
+        <div style={{ fontSize: 11, letterSpacing: 3, color: GOLD, fontWeight: 'bold', marginBottom: 8 }}>CONFIDENTIAL PROPOSAL</div>
+        <div style={{ fontSize: 28, fontWeight: 'bold', color: WHITE, marginBottom: 8 }}>Aba Digital Marketplace</div>
+        <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.6)', marginBottom: 40 }}>
+          This prototype is protected. Enter the access code to continue.
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <input
+            type="password"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Enter access code"
+            style={{
+              width: '100%',
+              padding: '16px 20px',
+              fontSize: 16,
+              border: `2px solid ${error ? DANGER : 'rgba(255,255,255,0.2)'}`,
+              borderRadius: 12,
+              backgroundColor: 'rgba(255,255,255,0.08)',
+              color: WHITE,
+              textAlign: 'center',
+              letterSpacing: 2,
+              outline: 'none',
+              transition: 'border-color 0.3s',
+              marginBottom: 16
+            }}
+            autoFocus
+          />
+          <button
+            type="submit"
+            style={{
+              width: '100%',
+              padding: '14px 20px',
+              fontSize: 15,
+              fontWeight: 'bold',
+              backgroundColor: GOLD,
+              color: NAVY,
+              border: 'none',
+              borderRadius: 12,
+              cursor: 'pointer',
+              letterSpacing: 1
+            }}
+          >
+            ACCESS PROPOSAL
+          </button>
+        </form>
+
+        {error && (
+          <div style={{ color: DANGER, fontSize: 13, marginTop: 16 }}>
+            Incorrect access code. Please try again.
+          </div>
+        )}
+
+        <div style={{ marginTop: 48, fontSize: 11, color: 'rgba(255,255,255,0.3)' }}>
+          Prepared by Stringz Technologies LLC for Abia State Government
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -3188,6 +3302,7 @@ export default function App() {
   const isMobile = useIsMobile();
 
   return (
+    <PasswordGate>
     <div style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', maxWidth: 1000, margin: '0 auto', backgroundColor: '#f5f7fa', minHeight: '100vh' }}>
       <Nav screen={screen} setScreen={setScreen} cart={cart} isMobile={isMobile} />
       <div style={{ padding: isMobile ? 12 : 24 }}>
@@ -3296,5 +3411,6 @@ export default function App() {
         </div>
       </div>
     </div>
+    </PasswordGate>
   );
 }
