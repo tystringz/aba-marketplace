@@ -1053,7 +1053,7 @@ const PilotAsk = ({ setScreen }) => (
           <div style={{ fontSize: 14, color: '#666' }}>90-day all-inclusive budget with line-item transparency</div>
         </div>
         <div style={{ textAlign: 'right' }}>
-          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦95M</div>
+          <div style={{ fontSize: 42, fontWeight: 'bold', color: NAVY }}>₦100M</div>
           <div style={{ fontSize: 14, color: GOLD, fontWeight: 'bold' }}>90-day pilot budget</div>
         </div>
       </div>
@@ -1061,7 +1061,7 @@ const PilotAsk = ({ setScreen }) => (
       {/* Detailed Line Items */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🖥️ Platform Development & Infrastructure — ₦38M (40%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🖥️ Platform Development & Infrastructure — ₦38M (38%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
             Engineering team (3-4 developers × 3 months): ₦15M<br />
             AI/WhatsApp Business API integration: ₦8M<br />
@@ -1072,7 +1072,7 @@ const PilotAsk = ({ setScreen }) => (
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>👥 Trader Onboarding & Field Operations — ₦22M (23%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>👥 Trader Onboarding & Field Operations — ₦22M (22%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
             Field agents (20 staff × 3 months): ₦9M<br />
             Professional photography team & equipment: ₦4M<br />
@@ -1082,7 +1082,7 @@ const PilotAsk = ({ setScreen }) => (
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🎓 Training, Support & Operations — ₦15M (16%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>🎓 Training, Support & Operations — ₦15M (15%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
             GADA operations team (5 staff × 3 months): ₦5M<br />
             Aba field office setup & equipment: ₦3M<br />
@@ -1092,12 +1092,13 @@ const PilotAsk = ({ setScreen }) => (
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8 }}>
-          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>📣 Marketing & Activation — ₦10M (11%)</div>
+          <div style={{ fontSize: 14, fontWeight: 'bold', color: NAVY, marginBottom: 12 }}>📣 Marketing & Activation — ₦15M (15%)</div>
           <div style={{ fontSize: 12, color: '#444', lineHeight: 1.8 }}>
-            Radio & media campaigns across Aba: ₦3M<br />
-            Market-level awareness & launch events: ₦3M<br />
-            Digital marketing & social media: ₦2M<br />
-            Printed materials & branded signage: ₦2M
+            Radio & media campaigns (Southeast Nigeria): ₦5M<br />
+            Market-level awareness & launch events: ₦3.5M<br />
+            Digital marketing, social media & influencers: ₦3M<br />
+            Printed materials, branded signage & merch: ₦2M<br />
+            Press launch event & PR: ₦1.5M
           </div>
         </div>
         <div style={{ padding: 16, backgroundColor: LIGHT_NAVY, borderRadius: 8, gridColumn: '1 / -1' }}>
@@ -1452,7 +1453,7 @@ const NextSteps = ({ setScreen }) => (
       <div style={{ display: 'flex', justifyContent: 'center', gap: 40, marginBottom: 24 }}>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Investment</div>
-          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦95M</div>
+          <div style={{ fontSize: 36, fontWeight: 'bold', color: NAVY }}>₦100M</div>
         </div>
         <div>
           <div style={{ fontSize: 14, color: '#666' }}>Duration</div>
