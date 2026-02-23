@@ -897,22 +897,27 @@
      ═══════════════════════════════════════════════════ */
   @media (max-width: 768px) {
     body {
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
-    .slide {
-      padding: 24px 20px 100px;
-      position: relative;
-      min-height: 100vh;
-      height: auto;
-      justify-content: flex-start;
-      padding-top: 40px;
-    }
-
+    /* Container stays fixed viewport */
     #presentation {
-      height: auto;
-      min-height: 100vh;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Slides stay absolute (required for JS engine) but scroll internally */
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 24px 20px 100px;
+      padding-top: 32px;
+      justify-content: flex-start;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* Typography */
@@ -939,11 +944,13 @@
     .stat-label { font-size: 12px; }
     .stat-sub { font-size: 11px; }
 
-    /* Controls bar */
+    /* Controls bar — always visible on mobile */
     #controls {
+      opacity: 1 !important;
       padding: 8px 16px;
       gap: 8px;
       bottom: 12px;
+      z-index: 100;
     }
     .ctrl-btn { width: 32px; height: 32px; font-size: 14px; }
     #slide-counter { font-size: 11px; min-width: 48px; }
@@ -957,8 +964,8 @@
       padding: 10px 16px;
     }
 
-    /* Key hints — hide on mobile */
-    .key-hint { display: none; }
+    /* Key hints — hide on mobile (no keyboard) */
+    .key-hint { display: none !important; }
 
     /* Phone mockup */
     .phone-frame {
@@ -1053,8 +1060,9 @@
 
   /* Extra small phones */
   @media (max-width: 380px) {
-    .slide { padding: 16px 14px 90px; padding-top: 32px; }
+    .slide { padding: 16px 14px 90px; padding-top: 24px; }
     .slide-title { font-size: 24px !important; }
+    .slide-subtitle { font-size: 14px !important; }
     .grid-2, .grid-3, .grid-4 { gap: 8px; }
     .stat-card { padding: 12px 10px; }
     .stat-value { font-size: 24px !important; }
@@ -2009,6 +2017,24 @@
         break;
     }
   });
+
+  // Touch swipe support for mobile
+  let touchStartX = 0;
+  let touchStartY = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].screenX - touchStartX;
+    const dy = e.changedTouches[0].screenY - touchStartY;
+    // Only trigger if horizontal swipe is dominant and long enough
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0) nextSlide();   // swipe left → next
+      else prevSlide();           // swipe right → prev
+    }
+  }, { passive: true });
 
   // Start
   showSlide(0);
