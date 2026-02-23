@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280, initial-scale=1">
+<title>Aba Digital Marketplace — Demo Walkthrough</title>
+<style>
+  /* ═══════════════════════════════════════════════════
+     RESET & BASE
+     ═══════════════════════════════════════════════════ */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #002868;
+    --gold: #C9A227;
+    --light-navy: #E8EDF5;
+    --success: #28a745;
+    --danger: #dc3545;
+    --white: #ffffff;
+    --indigo: #5232F9;
+    --bg: #0a0a1a;
+    --text: #e0e0e0;
+    --slide-duration: 7000;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PRESENTATION CONTAINER
+     ═══════════════════════════════════════════════════ */
+  #presentation {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     SLIDE BASE
+     ═══════════════════════════════════════════════════ */
+  .slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    padding: 60px 80px;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+  }
+
+  .slide.exit {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+
+  /* ═══════════════════════════════════════════════════
+     PROGRESS BAR
+     ═══════════════════════════════════════════════════ */
+  #progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    z-index: 1000;
+  }
+
+  #progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--indigo));
+    width: 0%;
+    transition: width 0.3s linear;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     CONTROLS
+     ═══════════════════════════════════════════════════ */
+  #controls {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    padding: 12px 28px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  #presentation:hover #controls,
+  #controls.visible {
+    opacity: 1;
+  }
+
+  .ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  .ctrl-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: var(--gold);
+  }
+
+  .ctrl-btn.active {
+    color: var(--gold);
+  }
+
+  #slide-counter {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    min-width: 60px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  #timer {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     VOICEOVER CUE
+     ═══════════════════════════════════════════════════ */
+  #voiceover-cue {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(8px);
+    padding: 12px 32px;
+    border-radius: 12px;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    font-size: 15px;
+    color: rgba(255,255,255,0.8);
+    z-index: 999;
+    max-width: 700px;
+    text-align: center;
+    line-height: 1.5;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  #voiceover-cue.visible {
+    opacity: 1;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     TYPOGRAPHY
+     ═══════════════════════════════════════════════════ */
+  .slide-title {
+    font-size: 52px;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .slide-subtitle {
+    font-size: 22px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    margin-bottom: 40px;
+    max-width: 700px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, var(--gold) 0%, #fff 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .navy-gradient {
+    background: linear-gradient(135deg, #4a8eff 0%, var(--white) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .green-gradient {
+    background: linear-gradient(135deg, #00c853 0%, #69f0ae 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     LAYOUT HELPERS
+     ═══════════════════════════════════════════════════ */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  .stat-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--indigo));
+  }
+
+  .stat-value {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  /* ═══════════════════════════════════════════════════
+     ANIMATED ELEMENTS
+     ═══════════════════════════════════════════════════ */
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .slide.active .fade-in-up {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .delay-1 { transition-delay: 0.2s; }
+  .delay-2 { transition-delay: 0.4s; }
+  .delay-3 { transition-delay: 0.6s; }
+  .delay-4 { transition-delay: 0.8s; }
+  .delay-5 { transition-delay: 1.0s; }
+  .delay-6 { transition-delay: 1.2s; }
+
+  /* Product cards */
+  .product-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+
+  .product-img {
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 56px;
+  }
+
+  .product-info {
+    padding: 16px;
+  }
+
+  .product-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .product-price {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--gold);
+  }
+
+  .product-seller {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    margin-top: 6px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+
+  .badge-green { background: #006400; color: white; }
+  .badge-gold { background: var(--gold); color: white; }
+  .badge-navy { background: var(--navy); color: white; }
+
+  /* Chat simulation */
+  .chat-container {
+    background: linear-gradient(180deg, #e5ddd5 0%, #d5cdc5 100%);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .chat-header {
+    background: var(--navy);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px 12px 0 0;
+    margin: -24px -24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .chat-bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: bubbleIn 0.4s forwards;
+  }
+
+  .chat-bubble.user {
+    background: #dcf8c6;
+    color: #333;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-bubble.ai {
+    background: white;
+    color: #333;
+    border-bottom-left-radius: 4px;
+  }
+
+  .chat-bubble .ai-label {
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  @keyframes bubbleIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Onboarding steps */
+  .step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    flex-shrink: 0;
+    transition: all 0.5s;
+  }
+
+  .step-circle.done {
+    background: var(--success);
+    color: white;
+  }
+
+  .step-circle.active-step {
+    background: var(--gold);
+    color: white;
+    box-shadow: 0 0 0 8px rgba(201, 162, 39, 0.2);
+  }
+
+  .step-circle.pending {
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.3);
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  .step-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 0;
+  }
+
+  .step-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .step-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* Dashboard chart bars */
+  .chart-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .chart-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--indigo));
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .slide.active .chart-bar-fill {
+    width: var(--fill);
+  }
+
+  /* Floating particles background */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(201, 162, 39, 0.2);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Phone mockup */
+  .phone-frame {
+    width: 280px;
+    height: 500px;
+    background: #111;
+    border-radius: 36px;
+    border: 3px solid #333;
+    padding: 12px;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #e5ddd5 0%, #d5cdc5 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .phone-notch {
+    width: 120px;
+    height: 24px;
+    background: #111;
+    border-radius: 0 0 16px 16px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Pulse animation */
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(60px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes typewriter {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  .typing-dots {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .typing-dots span {
+    width: 6px;
+    height: 6px;
+    background: #999;
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+  }
+
+  /* Gov photo */
+  .gov-photo-large {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--navy);
+    border: 4px solid var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 800;
+    font-size: 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    overflow: hidden;
+  }
+
+  .gov-photo-large img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 15%;
+  }
+
+  /* Marketplace mockup */
+  .marketplace-mockup {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 900px;
+    width: 100%;
+  }
+
+  .mock-nav {
+    background: var(--navy);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+  }
+
+  .mock-nav-brand {
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .mock-nav-brand span { color: var(--gold); }
+
+  .mock-nav-links {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .mock-hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #003d99 100%);
+    padding: 40px;
+    color: white;
+    text-align: center;
+  }
+
+  .mock-cats {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 30px;
+    background: #f8f9fa;
+  }
+
+  .mock-cat {
+    text-align: center;
+  }
+
+  .mock-cat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 8px;
+    border: 3px solid var(--gold);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .mock-cat-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 600;
+  }
+
+  .mock-products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .mock-product {
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .mock-product-img {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  .mock-product-info {
+    padding: 12px;
+  }
+
+  .mock-product-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .mock-product-price {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+
+  .mock-product-badge {
+    display: inline-block;
+    background: #006400;
+    color: white;
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+
+  /* Dashboard mockup */
+  .dash-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .dash-metric {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--white);
+  }
+
+  .dash-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 8px;
+  }
+
+  .dash-change {
+    font-size: 12px;
+    color: var(--success);
+    font-weight: 600;
+  }
+
+  /* Keyboard hints */
+  .key-hint {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(8px);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  #presentation:hover .key-hint { opacity: 1; }
+
+  kbd {
+    background: rgba(255,255,255,0.15);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-family: inherit;
+    margin: 0 2px;
+  }
+
+  /* Slide-specific backgrounds */
+  .bg-glow-gold {
+    background: radial-gradient(ellipse at 50% 30%, rgba(201,162,39,0.12) 0%, transparent 60%), var(--bg);
+  }
+
+  .bg-glow-navy {
+    background: radial-gradient(ellipse at 50% 30%, rgba(0,40,104,0.2) 0%, transparent 60%), var(--bg);
+  }
+
+  .bg-glow-green {
+    background: radial-gradient(ellipse at 50% 30%, rgba(40,167,69,0.1) 0%, transparent 60%), var(--bg);
+  }
+
+  .bg-glow-indigo {
+    background: radial-gradient(ellipse at 50% 30%, rgba(82,50,249,0.12) 0%, transparent 60%), var(--bg);
+  }
+
+  /* Quick win timeline */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+    max-width: 600px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--gold), var(--success));
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 24px;
+  }
+
+  .timeline-dot {
+    position: absolute;
+    left: -33px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 3px solid var(--bg);
+  }
+
+  .timeline-label {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .timeline-text {
+    font-size: 16px;
+    color: var(--white);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .timeline-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+  }
+
+  /* Legacy glow */
+  .legacy-border {
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 700px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .legacy-border::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--indigo), var(--gold));
+    z-index: -1;
+    animation: borderGlow 3s linear infinite;
+  }
+
+  @keyframes borderGlow {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Progress bar -->
+<div id="progress-container">
+  <div id="progress-bar"></div>
+</div>
+
+<!-- Keyboard hints -->
+<div class="key-hint">
+  <kbd>Space</kbd> Pause &nbsp; <kbd>←</kbd> <kbd>→</kbd> Navigate &nbsp; <kbd>R</kbd> Restart
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SLIDES
+     ═══════════════════════════════════════════════════ -->
+<div id="presentation">
+
+  <!-- SLIDE 0: TITLE -->
+  <div class="slide bg-glow-gold" data-duration="8000" data-cue="Welcome to the Aba Digital Marketplace — a proposal to digitize Nigeria's largest informal trade ecosystem.">
+    <div class="fade-in-up">
+      <div style="display:flex;align-items:center;gap:16px;justify-content:center;margin-bottom:24px;">
+        <div class="gov-photo-large">
+          <img src="images/governor-otti.jpg" alt="Gov. Otti" onerror="this.parentElement.innerHTML='AO'">
+        </div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-1" style="text-align:center">
+      <div style="font-size:13px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;font-weight:700;margin-bottom:12px;">A Proposal for His Excellency</div>
+    </div>
+    <h1 class="slide-title fade-in-up delay-2">
+      <span class="gradient-text">Aba Digital</span><br>Marketplace
+    </h1>
+    <p class="slide-subtitle fade-in-up delay-3">
+      Bringing ₦144 billion of informal trade online.<br>
+      A partnership between Abia State Government & Stringz Technologies.
+    </p>
+    <div class="fade-in-up delay-4" style="display:flex;gap:12px;align-items:center;justify-content:center;">
+      <span class="badge badge-green">🇳🇬 Made in Aba</span>
+      <span class="badge badge-navy">🔒 Secure</span>
+      <span class="badge badge-gold">⚡ AI-Powered</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: THE PROBLEM -->
+  <div class="slide bg-glow-navy" data-duration="9000" data-cue="Aba is Africa's largest artisan cluster — but it runs entirely offline. ₦144 billion in annual trade, invisible to the digital economy. As one trader said: People call it Made in China. It is Made in Aba.">
+    <div class="section-label fade-in-up">The Opportunity</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:44px;">
+      <span class="navy-gradient">Africa's Largest</span> Artisan Hub<br>
+      Is Entirely Offline
+    </h1>
+    <div class="grid-4 fade-in-up delay-2">
+      <div class="stat-card">
+        <div class="stat-value" data-counter="37000">37,000</div>
+        <div class="stat-label">Shops in Ariaria</div>
+        <div class="stat-sub">Single market complex</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">₦144B</div>
+        <div class="stat-label">Annual Trade Volume</div>
+        <div class="stat-sub">Mostly cash-based</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" data-counter="110000">110,000+</div>
+        <div class="stat-label">Shoemakers</div>
+        <div class="stat-sub">Largest in West Africa</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" data-counter="50000">50,000+</div>
+        <div class="stat-label">Garment Makers</div>
+        <div class="stat-sub">"China of Africa"</div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-3" style="margin-top:20px;text-align:center;max-width:700px;">
+      <div style="background:rgba(201,162,39,0.1);border:1px solid rgba(201,162,39,0.3);padding:14px 24px;border-radius:10px;margin-bottom:12px;">
+        <div style="font-size:16px;color:rgba(255,255,255,0.9);font-style:italic;line-height:1.5;">"People call it 'Made in China.' It is <strong style="color:var(--gold);">'Made in Aba.'</strong>"</div>
+        <div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;">— Joseph Nmeri, Ariaria Trader</div>
+      </div>
+      <span style="font-size:13px;color:rgba(255,255,255,0.5);">Abia ranks <strong style="color:var(--danger)">35th of 37</strong> states economically — despite this industrial base.</span>
+      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:8px;">Sources: Wikipedia, Techpoint Africa, ICIR, ThisDay Live</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: POWER CRISIS -->
+  <div class="slide bg-glow-navy" data-duration="7000" data-cue="The infrastructure crisis is real. 32,000 shops lack grid power, spending over ₦1 billion annually on generators alone.">
+    <div class="section-label fade-in-up">The Infrastructure Gap</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      A Market That Powers Itself<br>
+      <span style="color:var(--danger)">— At Great Cost</span>
+    </h1>
+    <div class="grid-3 fade-in-up delay-2">
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--danger)">32,000</div>
+        <div class="stat-label">Shops Without Grid Power</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--danger)">₦1B</div>
+        <div class="stat-label">Annual Generator Spending</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" style="color:var(--danger)">₦8,000</div>
+        <div class="stat-label">Monthly Per-Trader Cost</div>
+      </div>
+    </div>
+    <p class="fade-in-up delay-3" style="font-size:16px;color:rgba(255,255,255,0.6);margin-top:28px;text-align:center;max-width:600px;">
+      Digital tools bypass physical infrastructure limitations.<br>
+      <strong style="color:var(--gold)">A phone is the new shop front.</strong>
+    </p>
+  </div>
+
+  <!-- SLIDE 3: WHY NOW -->
+  <div class="slide bg-glow-gold" data-duration="7000" data-cue="Governor Otti's administration has already invested in market modernization. This platform amplifies that investment digitally.">
+    <div class="section-label fade-in-up">Government Momentum</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      Building on<br><span class="gradient-text">Existing Investment</span>
+    </h1>
+    <div class="grid-3 fade-in-up delay-2">
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px;">🏗️</div>
+        <div class="stat-value" style="font-size:32px;">14</div>
+        <div class="stat-label">Phase II A-Line Sections</div>
+        <div class="stat-sub">Active construction — pilot zone</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px;">🏪</div>
+        <div class="stat-value" style="font-size:32px;">480</div>
+        <div class="stat-label">New Shop Block Capacity</div>
+        <div class="stat-sub">Modern infrastructure</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:32px;margin-bottom:8px;">🌍</div>
+        <div class="stat-value" style="font-size:28px;">6+</div>
+        <div class="stat-label">Countries Buy from Aba</div>
+        <div class="stat-sub">Ghana, Cameroon, South Africa...</div>
+      </div>
+    </div>
+    <p class="fade-in-up delay-3" style="font-size:15px;color:rgba(255,255,255,0.5);margin-top:24px;text-align:center;max-width:550px;">
+      The physical modernization is happening. This platform adds the <strong style="color:var(--gold)">digital layer</strong>.
+    </p>
+  </div>
+
+  <!-- SLIDE 4: QUICK WINS -->
+  <div class="slide bg-glow-green" data-duration="8000" data-cue="Here's what we deliver in the A-Line pilot zone. 500 verified traders by Day 30, 2,000 by Day 90 — announceable wins the governor can point to immediately.">
+    <div class="section-label fade-in-up">Quick Wins</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      Announcement-Ready<br><span class="green-gradient">Results</span>
+    </h1>
+    <div class="grid-2 fade-in-up delay-2">
+      <div>
+        <div style="font-size:13px;color:var(--gold);font-weight:700;letter-spacing:2px;margin-bottom:16px;">📅 FIRST 30 DAYS</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-label">Week 1-2</div>
+            <div class="timeline-text">500 verified traders, 2,000+ products</div>
+            <div class="timeline-desc">NIN-verified across A-Line pilot zone</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:4px;font-style:italic;">20 field agents x 5 traders/day x 5 days = 500 in 2 weeks</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-label">Week 3-4</div>
+            <div class="timeline-text">First verified transactions</div>
+            <div class="timeline-desc">AI-powered product listing & search working</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:var(--success);font-weight:700;letter-spacing:2px;margin-bottom:16px;">📅 FIRST 90 DAYS</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--success)"></div>
+            <div class="timeline-label">Month 2</div>
+            <div class="timeline-text">2,000 verified traders, 10,000+ products</div>
+            <div class="timeline-desc">Cross-border orders from West Africa</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot" style="background:var(--success)"></div>
+            <div class="timeline-label">Month 3</div>
+            <div class="timeline-text">500+ transactions, ₦5M+ volume</div>
+            <div class="timeline-desc">Live dashboard — governor's press moment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: THE PLATFORM -->
+  <div class="slide bg-glow-indigo" data-duration="9000" data-cue="Let me show you the platform itself. This is what a buyer sees — categories, products, verified Made-in-Aba goods.">
+    <div class="section-label fade-in-up">The Platform</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:36px;margin-bottom:32px;">
+      <span class="gradient-text">Marketplace</span> Experience
+    </h1>
+    <div class="marketplace-mockup fade-in-up delay-2">
+      <div class="mock-nav">
+        <div class="mock-nav-brand">🏛️ <span>Aba</span> Digital Market</div>
+        <div class="mock-nav-links">
+          <span>Home</span>
+          <span>Products</span>
+          <span>Sellers</span>
+          <span style="color:var(--gold)">🔍 AI Search</span>
+        </div>
+      </div>
+      <div class="mock-hero">
+        <div style="font-size:24px;font-weight:800;margin-bottom:8px;">🛒 Shop Authentic Made-in-Aba Products</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);">From 37,000+ verified artisans in Ariaria International Market</div>
+      </div>
+      <div class="mock-cats">
+        <div class="mock-cat">
+          <div class="mock-cat-icon" style="background:#8B4513">👞</div>
+          <div class="mock-cat-label">Footwear</div>
+        </div>
+        <div class="mock-cat">
+          <div class="mock-cat-icon" style="background:#654321">👜</div>
+          <div class="mock-cat-label">Bags</div>
+        </div>
+        <div class="mock-cat">
+          <div class="mock-cat-icon" style="background:#4A4A4A">👔</div>
+          <div class="mock-cat-label">Fashion</div>
+        </div>
+        <div class="mock-cat">
+          <div class="mock-cat-icon" style="background:#5D4037">🧥</div>
+          <div class="mock-cat-label">Leather</div>
+        </div>
+      </div>
+      <div class="mock-products">
+        <div class="mock-product">
+          <div class="mock-product-img" style="background:linear-gradient(135deg,#8B4513,#D2691E)">👞</div>
+          <div class="mock-product-info">
+            <div class="mock-product-name">Men's Leather Loafers</div>
+            <div class="mock-product-price">₦12,500</div>
+            <div class="mock-product-badge">🇳🇬 MADE IN ABA</div>
+          </div>
+        </div>
+        <div class="mock-product">
+          <div class="mock-product-img" style="background:linear-gradient(135deg,#654321,#8B7355)">💼</div>
+          <div class="mock-product-info">
+            <div class="mock-product-name">Executive Bag</div>
+            <div class="mock-product-price">₦25,000</div>
+            <div class="mock-product-badge">🇳🇬 MADE IN ABA</div>
+          </div>
+        </div>
+        <div class="mock-product">
+          <div class="mock-product-img" style="background:linear-gradient(135deg,#DEB887,#F4A460)">👡</div>
+          <div class="mock-product-info">
+            <div class="mock-product-name">Ladies Sandals</div>
+            <div class="mock-product-price">₦4,500</div>
+            <div class="mock-product-badge">🇳🇬 MADE IN ABA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: AI WHATSAPP -->
+  <div class="slide bg-glow-indigo" data-duration="10000" data-cue="The secret weapon — WhatsApp AI. Traders list products by sending a photo. Buyers shop in their own language. Igbo, Yoruba, Pidgin, Hausa, or English.">
+    <div class="section-label fade-in-up">AI-Powered Commerce</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:36px;margin-bottom:32px;">
+      WhatsApp AI in <span class="gradient-text">5 Languages</span>
+    </h1>
+    <div class="grid-2 fade-in-up delay-2" style="align-items:start;">
+      <!-- Trader view -->
+      <div>
+        <div style="text-align:center;margin-bottom:16px;font-size:14px;color:var(--gold);font-weight:700;">📱 TRADER VIEW — Listing a Product</div>
+        <div class="phone-frame" style="margin:0 auto;">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div style="background:var(--navy);color:white;padding:10px 16px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;">Aba Market AI</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.6);">🟢 Online • Igbo & English</div>
+              </div>
+            </div>
+            <div style="padding:12px;" id="trader-chat">
+              <div class="chat-bubble user" style="animation-delay:0.5s">📸 [Photo of leather shoes]</div>
+              <div class="chat-bubble ai" style="animation-delay:1.2s">
+                <div class="ai-label">🟢 AI • Igbo/English</div>
+                Nnọọ! Nice leather loafers 👞<br>
+                Suggested price: ₦12,500<br>
+                Category: Footwear<br><br>
+                Should I list these? ✅
+              </div>
+              <div class="chat-bubble user" style="animation-delay:2.0s">Yes, list am ✅</div>
+              <div class="chat-bubble ai" style="animation-delay:2.8s">
+                <div class="ai-label">🟢 AI</div>
+                Done! Listed on marketplace 🎉<br>
+                You'll get notifications for orders.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Buyer view -->
+      <div>
+        <div style="text-align:center;margin-bottom:16px;font-size:14px;color:var(--success);font-weight:700;">🛒 BUYER VIEW — Shopping in Pidgin</div>
+        <div class="phone-frame" style="margin:0 auto;">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div style="background:var(--navy);color:white;padding:10px 16px;display:flex;align-items:center;gap:10px;">
+              <div style="width:32px;height:32px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">🛒</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;">Aba Shopping AI</div>
+                <div style="font-size:10px;color:rgba(255,255,255,0.6);">🔵 Online • Pidgin English</div>
+              </div>
+            </div>
+            <div style="padding:12px;" id="buyer-chat">
+              <div class="chat-bubble user" style="animation-delay:0.8s">I wan buy fine shoe for wedding, budget na ₦20k</div>
+              <div class="chat-bubble ai" style="animation-delay:1.6s">
+                <div class="ai-label">🔵 AI • Pidgin</div>
+                How far! I find 3 fine shoes for you 👞<br><br>
+                1. Oxford Shoes — ₦18,000 ⭐⭐⭐⭐⭐<br>
+                2. Leather Loafers — ₦12,500 ⭐⭐⭐⭐⭐<br>
+                3. Ladies Sandals — ₦4,500 ⭐⭐⭐⭐<br><br>
+                Which one catch your eye? 👀
+              </div>
+              <div class="chat-bubble user" style="animation-delay:2.4s">Number 1, the Oxford</div>
+              <div class="chat-bubble ai" style="animation-delay:3.2s">
+                <div class="ai-label">🔵 AI</div>
+                Sharp! 🎉 Adding to cart.<br>
+                Pay with transfer or card? 💳
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-4" style="display:flex;gap:12px;justify-content:center;margin-top:24px;">
+      <span class="badge badge-green">🟢 Igbo</span>
+      <span class="badge badge-gold">🟡 Yoruba</span>
+      <span class="badge" style="background:#dc3545;color:white">🔴 Hausa</span>
+      <span class="badge badge-navy">🔵 Pidgin</span>
+      <span class="badge" style="background:#666;color:white">⚪ English</span>
+      <span class="badge" style="background:#333;color:white;border:1px solid #555">📱 USSD</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: SELLER ONBOARDING -->
+  <div class="slide bg-glow-green" data-duration="8000" data-cue="Seller onboarding is simple — 7 steps, all via WhatsApp. Phone verification, NIN, business profile, bank account, and they're selling.">
+    <div class="section-label fade-in-up">Seller Onboarding</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:36px;margin-bottom:32px;">
+      From Market Stall to<br><span class="green-gradient">Online Shop in 7 Steps</span>
+    </h1>
+    <div class="fade-in-up delay-2" style="max-width:600px;width:100%;">
+      <div class="step-row">
+        <div class="step-circle done">✓</div>
+        <div><div class="step-text">Phone Verification</div><div class="step-desc">OTP sent via SMS</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle done">✓</div>
+        <div><div class="step-text">NIN Verification</div><div class="step-desc">NIMC database lookup</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle done">✓</div>
+        <div><div class="step-text">Business Profile</div><div class="step-desc">Shop name, location, category</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle done">✓</div>
+        <div><div class="step-text">CAC Registration</div><div class="step-desc">Optional — assisted registration</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle done">✓</div>
+        <div><div class="step-text">Bank Account</div><div class="step-desc">Link for instant payouts</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle active-step">6</div>
+        <div><div class="step-text">Upload Products</div><div class="step-desc">Photo → AI generates listing</div></div>
+      </div>
+      <div class="step-row">
+        <div class="step-circle pending">7</div>
+        <div><div class="step-text">Verification Complete</div><div class="step-desc">Start selling immediately 🎉</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: DASHBOARD -->
+  <div class="slide bg-glow-navy" data-duration="8000" data-cue="The governor's dashboard — real-time revenue tracking, order volume, and growth projections for Abia State's digital economy.">
+    <div class="section-label fade-in-up">Analytics Dashboard</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:36px;margin-bottom:32px;">
+      <span class="navy-gradient">State Revenue</span> at a Glance
+    </h1>
+    <div class="grid-4 fade-in-up delay-2">
+      <div class="dash-card">
+        <div class="dash-label">Monthly Revenue</div>
+        <div class="dash-metric" style="color:var(--gold)">₦24.5M</div>
+        <div class="dash-change">↑ 12% from last month</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:72%"></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Active Sellers</div>
+        <div class="dash-metric">1,247</div>
+        <div class="dash-change">↑ 8% weekly growth</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:58%"></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Weekly Orders</div>
+        <div class="dash-metric">3,890</div>
+        <div class="dash-change">↑ 15% from last week</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:85%"></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Cross-Border</div>
+        <div class="dash-metric">18%</div>
+        <div class="dash-change">Orders from 6 countries</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:35%"></div></div>
+      </div>
+    </div>
+    <div class="grid-3 fade-in-up delay-3" style="margin-top:24px;">
+      <div class="dash-card">
+        <div class="dash-label">Top Category</div>
+        <div style="font-size:24px;margin:8px 0;">👞</div>
+        <div style="font-size:16px;font-weight:700;color:white;">Footwear — 62%</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:62%"></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Bags & Leather</div>
+        <div style="font-size:24px;margin:8px 0;">👜</div>
+        <div style="font-size:16px;font-weight:700;color:white;">Bags — 24%</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:24%"></div></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">Fashion & Garments</div>
+        <div style="font-size:24px;margin:8px 0;">👔</div>
+        <div style="font-size:16px;font-weight:700;color:white;">Fashion — 14%</div>
+        <div class="chart-bar"><div class="chart-bar-fill" style="--fill:14%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: WHY NOT JUMIA -->
+  <div class="slide bg-glow-indigo" data-duration="8000" data-cue="Now, someone will ask — why not Jumia? Why not Konga? Because those platforms were not built for Aba. They require formal businesses, speak only English, charge high commissions, and have zero presence in Ariaria. This platform meets traders where they are — WhatsApp, USSD, Igbo, NIN-verified, and commission under 2 percent. No state in Nigeria has done this.">
+    <div class="section-label fade-in-up">Competitive Positioning</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      Why Not <span style="color:var(--danger)">Jumia</span>?
+    </h1>
+    <p class="slide-subtitle fade-in-up delay-2" style="margin-bottom:28px;">Existing platforms were not built for Aba's informal traders</p>
+    <div class="grid-2 fade-in-up delay-3" style="max-width:900px;">
+      <div class="stat-card" style="text-align:left;padding:24px;border-color:rgba(220,53,69,0.3);">
+        <div style="font-size:14px;font-weight:700;color:var(--danger);margin-bottom:16px;">EXISTING PLATFORMS</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:2;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">✗</span> Require CAC registration & formal business</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">✗</span> English only — no Igbo, Pidgin, or Hausa</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">✗</span> 15–25% seller commissions</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">✗</span> No physical presence in Aba markets</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--danger)">✗</span> No state data ownership or governance</div>
+        </div>
+      </div>
+      <div class="stat-card" style="text-align:left;padding:24px;border-color:rgba(40,167,69,0.3);">
+        <div style="font-size:14px;font-weight:700;color:var(--success);margin-bottom:16px;">ABA DIGITAL MARKETPLACE</div>
+        <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:2;">
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> NIN verification — no CAC required</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> WhatsApp AI in 5 languages + USSD</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> 1–1.5% transaction levy only</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> 20 field agents embedded in Ariaria</div>
+          <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> GADA-governed — state owns the data</div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-4" style="margin-top:24px;text-align:center;">
+      <div style="background:rgba(82,50,249,0.15);border:1px solid rgba(82,50,249,0.3);padding:12px 28px;border-radius:10px;display:inline-block;">
+        <span style="font-size:15px;font-weight:700;color:white;">No state in Nigeria has digitized an informal market at this scale.</span>
+        <span style="font-size:15px;color:var(--gold);font-weight:700;"> Abia goes first.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: PILOT BUDGET -->
+  <div class="slide bg-glow-gold" data-duration="9000" data-cue="The ask — ₦100 million for a 90-day pilot across five budget lines. Platform development, onboarding, training, marketing, and contingency. Paid in three milestone tranches: 40% at kick-off, 30% at Day 30, 30% at Day 90.">
+    <div class="section-label fade-in-up">The Investment</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:44px;">
+      <span class="gradient-text">₦100M</span> Pilot Budget
+    </h1>
+    <p class="slide-subtitle fade-in-up delay-2">90-day proof of concept with milestone-based payments</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;width:100%;max-width:1000px;" class="fade-in-up delay-3">
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">🖥️</div>
+        <div class="stat-value" style="font-size:24px;color:var(--gold)">₦38M</div>
+        <div class="stat-label">Platform & Tech</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">38%</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">👥</div>
+        <div class="stat-value" style="font-size:24px;color:var(--gold)">₦22M</div>
+        <div class="stat-label">Onboarding & Field</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">22%</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">🎓</div>
+        <div class="stat-value" style="font-size:24px;color:var(--gold)">₦15M</div>
+        <div class="stat-label">Training & Ops</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">15%</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">📣</div>
+        <div class="stat-value" style="font-size:24px;color:var(--gold)">₦15M</div>
+        <div class="stat-label">Marketing</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">15%</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">🛡️</div>
+        <div class="stat-value" style="font-size:24px;color:var(--gold)">₦10M</div>
+        <div class="stat-label">Contingency</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">10%</div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-4" style="margin-top:24px;text-align:center;width:100%;max-width:700px;">
+      <div style="background:rgba(201,162,39,0.1);border:1px solid rgba(201,162,39,0.3);padding:16px 28px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:16px;">
+        <div style="text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);">40%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">Kick-off</div>
+        </div>
+        <div style="font-size:18px;color:rgba(255,255,255,0.3);">→</div>
+        <div style="text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);">30%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">Day 30</div>
+        </div>
+        <div style="font-size:18px;color:rgba(255,255,255,0.3);">→</div>
+        <div style="text-align:center;">
+          <div style="font-size:22px;font-weight:800;color:var(--gold);">30%</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.5);">Day 90</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:8px;">Milestone-based disbursement — every naira tracked with monthly reporting</div>
+    </div>
+    <div class="fade-in-up delay-5" style="margin-top:14px;text-align:center;">
+      <span style="font-size:14px;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.06);padding:8px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);">Cost per trader digitized: <strong style="color:var(--gold)">₦50,000</strong> — less than one year of generator fuel</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: SUSTAINABILITY -->
+  <div class="slide bg-glow-green" data-duration="8000" data-cue="This isn't a one-off grant. Four revenue streams: a 1 to 1.5 percent transaction levy, annual registration fees, premium listings, and data and logistics services. Conservative projection: ₦107 to 178 million per year. At full scale, over ₦600 million.">
+    <div class="section-label fade-in-up">Sustainability Model</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      Self-Sustaining by<br><span class="green-gradient">Month 12–18</span>
+    </h1>
+    <div class="grid-4 fade-in-up delay-2">
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">💳</div>
+        <div class="stat-value" style="font-size:22px;">1–1.5%</div>
+        <div class="stat-label">Transaction Levy</div>
+        <div class="stat-sub">Primary revenue stream</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">📋</div>
+        <div class="stat-value" style="font-size:22px;">₦5–10K</div>
+        <div class="stat-label">Registration Fees</div>
+        <div class="stat-sub">Annual per trader</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">⭐</div>
+        <div class="stat-value" style="font-size:22px;">₦5–15K</div>
+        <div class="stat-label">Premium Listings</div>
+        <div class="stat-sub">Monthly per seller</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size:24px;margin-bottom:6px;">📊</div>
+        <div class="stat-value" style="font-size:22px;">Variable</div>
+        <div class="stat-label">Data & Logistics</div>
+        <div class="stat-sub">Analytics, last-mile</div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-3" style="margin-top:24px;display:flex;gap:20px;justify-content:center;max-width:700px;">
+      <div style="flex:1;background:rgba(40,167,69,0.1);border:1px solid rgba(40,167,69,0.3);padding:18px;border-radius:12px;text-align:center;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px;">Conservative (Year 1–2)</div>
+        <div style="font-size:28px;font-weight:800;color:var(--success);">₦107–178M</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">Per year</div>
+      </div>
+      <div style="flex:1;background:rgba(201,162,39,0.1);border:1px solid rgba(201,162,39,0.3);padding:18px;border-radius:12px;text-align:center;">
+        <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:6px;">Full Scale (Year 3–5)</div>
+        <div style="font-size:28px;font-weight:800;color:var(--gold);">₦632M–1B</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;">Per year</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: GADA & DATA INTELLIGENCE -->
+  <div class="slide bg-glow-navy" data-duration="9000" data-cue="GADA — the Greater Aba Development Agency — becomes the institutional home for this platform. A 3 to 5 person unit under the state. And here's the hidden gold: once traders transact digitally, the state gets a real-time economic census — tax optimization, policy evidence, and a licensable blueprint for other states.">
+    <div class="section-label fade-in-up">Governance & Data</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      <span class="navy-gradient">GADA</span> + Data Intelligence
+    </h1>
+    <div class="grid-2 fade-in-up delay-2" style="align-items:start;">
+      <div>
+        <div style="font-size:13px;color:var(--gold);font-weight:700;letter-spacing:2px;margin-bottom:16px;">🏛️ INSTITUTIONAL HOME</div>
+        <div class="stat-card" style="text-align:left;padding:24px;">
+          <div style="font-size:18px;font-weight:700;color:white;margin-bottom:12px;">Greater Aba Development Agency</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;">
+            <div style="margin-bottom:8px;">Platform operated under <strong style="color:var(--gold)">GADA</strong> — a state entity</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="color:var(--success)">✓</span> 3–5 person dedicated team</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="color:var(--success)">✓</span> State retains ownership of platform & data</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--success)">✓</span> Stringz provides tech — GADA governs</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:13px;color:var(--gold);font-weight:700;letter-spacing:2px;margin-bottom:16px;">📊 THE HIDDEN GOLD</div>
+        <div class="stat-card" style="text-align:left;padding:24px;">
+          <div style="font-size:18px;font-weight:700;color:white;margin-bottom:12px;">Data & Intelligence</div>
+          <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="color:var(--gold)">📍</span> Real-time digital census of traders</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="color:var(--gold)">💰</span> Tax revenue optimization</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="color:var(--gold)">📈</span> Evidence-based trade policy</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--gold)">🗺️</span> Licensable blueprint for other states</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-3" style="margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+      <span class="badge badge-green">🚚 Logistics</span>
+      <span class="badge badge-gold">🏭 Warehousing</span>
+      <span class="badge badge-navy">📜 Certification</span>
+      <span class="badge" style="background:#5232F9;color:white">🏦 Trade Finance</span>
+      <span class="badge" style="background:#333;color:white;border:1px solid #555">📦 Packaging</span>
+    </div>
+    <div class="fade-in-up delay-4" style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4);text-align:center;">New businesses enabled by the digital ecosystem</div>
+  </div>
+
+  <!-- SLIDE 13: TRADER VOICES -->
+  <div class="slide bg-glow-navy" data-duration="7000" data-cue="These are real voices from Aba's markets — drawn from published interviews and on-the-ground research. The demand is not theoretical. Traders are already asking for this.">
+    <div class="section-label fade-in-up">Trader Voices</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      <span class="navy-gradient">What Traders</span> Are Saying
+    </h1>
+    <div class="grid-3 fade-in-up delay-2">
+      <div class="stat-card" style="text-align:left;padding:24px;">
+        <div style="font-size:32px;margin-bottom:12px;">💬</div>
+        <div style="font-size:15px;color:rgba(255,255,255,0.8);line-height:1.6;font-style:italic;">
+          "If I can show my shoes to people in Lagos and Abuja through phone, my business go grow well well."
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--gold);font-weight:600;">— Okechukwu, Shoemaker, Ariaria</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Source: ICIR field interview</div>
+      </div>
+      <div class="stat-card" style="text-align:left;padding:24px;">
+        <div style="font-size:32px;margin-bottom:12px;">💬</div>
+        <div style="font-size:15px;color:rgba(255,255,255,0.8);line-height:1.6;font-style:italic;">
+          "We dey make quality pass China products, but nobody sabi us online. We need this kind platform."
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--gold);font-weight:600;">— Mama Ada, Bag Maker, Cemetery Market</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Source: Market field research</div>
+      </div>
+      <div class="stat-card" style="text-align:left;padding:24px;">
+        <div style="font-size:32px;margin-bottom:12px;">💬</div>
+        <div style="font-size:15px;color:rgba(255,255,255,0.8);line-height:1.6;font-style:italic;">
+          "People call it 'Made in China.' It is <strong style="color:var(--gold)">'Made in Aba.'</strong>"
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--gold);font-weight:600;">— Joseph Nmeri, Ariaria Trader</div>
+        <div style="font-size:10px;color:rgba(255,255,255,0.3);margin-top:4px;">Source: Techpoint Africa, published interview</div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-3" style="margin-top:20px;text-align:center;">
+      <div style="display:inline-block;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);padding:8px 24px;border-radius:8px;">
+        <span style="font-size:13px;color:rgba(255,255,255,0.45);">📰 Sources: Published interviews (ICIR, Techpoint Africa) and direct market field research</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: LEGACY -->
+  <div class="slide bg-glow-gold" data-duration="9000" data-cue="No state in Nigeria has done this. Not Lagos. Not Kano. When Governor Otti launches the Aba Digital Marketplace, Abia becomes the first state to digitize an informal market at scale. This is the headline. This is the legacy.">
+    <div class="section-label fade-in-up">Institutional Legacy</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:40px;">
+      <span class="gradient-text">The First State</span><br>in Nigeria to Digitize an Informal Market
+    </h1>
+    <!-- "First State" banner -->
+    <div class="fade-in-up delay-2" style="margin-top:8px;margin-bottom:24px;">
+      <div style="display:inline-block;background:linear-gradient(135deg, rgba(201,162,39,0.15), rgba(201,162,39,0.05));border:1px solid rgba(201,162,39,0.4);padding:10px 28px;border-radius:8px;">
+        <span style="font-size:14px;color:var(--gold);font-weight:700;letter-spacing:1px;">NOT LAGOS. NOT KANO. NOT OGUN. &nbsp;—&nbsp; ABIA GOES FIRST.</span>
+      </div>
+    </div>
+    <!-- Newspaper headline mockup -->
+    <div class="fade-in-up delay-3" style="max-width:700px;width:100%;">
+      <div style="background:white;border-radius:4px;padding:24px 32px;box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #222;padding-bottom:8px;margin-bottom:12px;">
+          <span style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#222;">THE VANGUARD</span>
+          <span style="font-size:11px;color:#888;">Business &amp; Economy</span>
+        </div>
+        <div style="font-family:Georgia,serif;font-size:22px;font-weight:700;color:#111;line-height:1.35;margin-bottom:8px;">
+          Gov. Otti Launches Digital Marketplace — 2,000 Aba Traders Go Online in 90 Days
+        </div>
+        <div style="font-size:13px;color:#555;line-height:1.5;">
+          <em>Abia becomes first Nigerian state to digitize informal trade at scale. The AI-powered platform supports Igbo, Pidgin, and USSD — reaching traders with no smartphone.</em>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:16px;">
+          <span style="font-size:11px;color:#999;font-style:italic;">Also reported by: ThisDay, Channels TV, Techpoint Africa</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3 fade-in-up delay-4" style="margin-top:28px;">
+      <div style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">📊</div>
+        <div style="font-size:15px;font-weight:600;color:white;">Data Stays with Abia</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;">State-owned digital infrastructure</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🔄</div>
+        <div style="font-size:15px;font-weight:600;color:white;">Self-Sustaining Revenue</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;">No recurring government funding needed</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:28px;margin-bottom:8px;">🌍</div>
+        <div style="font-size:15px;font-weight:600;color:white;">Global Visibility</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;">"Made in Aba" as a world-class brand</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 15: NEXT STEPS / CTA -->
+  <div class="slide bg-glow-gold" data-duration="9000" data-cue="Three steps. One approval meeting. A pilot launch in Ariaria within two weeks. And a press announcement that puts Abia on the national stage. Your Excellency, Aba's 37,000 traders are waiting. The question is not if — it's when.">
+    <div class="section-label fade-in-up">Next Steps</div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:44px;">
+      <span class="gradient-text">One Decision.</span><br>37,000 Traders Waiting.
+    </h1>
+    <div class="fade-in-up delay-2" style="max-width:500px;width:100%;">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.06);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+          <div style="width:40px;height:40px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:white;flex-shrink:0;">1</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:white;">Approval Meeting</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);">30-minute briefing with the governor's team</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.06);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+          <div style="width:40px;height:40px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:white;flex-shrink:0;">2</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:white;">Pilot Launch</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);">Deploy in Ariaria within 2 weeks of approval</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,0.06);padding:20px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);">
+          <div style="width:40px;height:40px;background:var(--success);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:white;flex-shrink:0;">3</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:white;">Press Announcement</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);">"Abia becomes first state to digitize informal trade"</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="fade-in-up delay-4" style="margin-top:32px;text-align:center;max-width:640px;">
+      <div style="background:linear-gradient(135deg, rgba(201,162,39,0.12), rgba(201,162,39,0.04));border:2px solid var(--gold);padding:20px 36px;border-radius:16px;">
+        <div style="font-size:22px;font-weight:700;color:white;line-height:1.5;">
+          "Governor Otti's Aba: where Nigeria's largest<br>artisan economy <span style="color:var(--gold);">went digital</span>."
+        </div>
+        <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.4);">A Proposal by Stringz Technologies for Abia State Government</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 16: THANK YOU -->
+  <div class="slide bg-glow-gold" data-duration="10000" data-cue="">
+    <div class="fade-in-up" style="margin-bottom:24px;">
+      <div class="gov-photo-large" style="width:120px;height:120px;margin:0 auto;">
+        <img src="images/governor-otti.jpg" alt="Gov. Otti" onerror="this.parentElement.innerHTML='AO'" style="width:100%;height:100%;object-fit:cover;object-position:center 15%;">
+      </div>
+    </div>
+    <h1 class="slide-title fade-in-up delay-1" style="font-size:52px;">
+      <span class="gradient-text">Thank You</span>
+    </h1>
+    <p class="slide-subtitle fade-in-up delay-2" style="font-size:18px;">
+      Your Excellency, Gov. Alex Otti, OFR<br>
+      Executive Governor, Abia State
+    </p>
+    <div class="fade-in-up delay-3" style="margin-top:20px;text-align:center;">
+      <div style="font-size:36px;font-weight:800;color:var(--white);margin-bottom:8px;">Aba Goes Digital. 🇳🇬</div>
+      <div style="font-size:15px;color:rgba(255,255,255,0.5);">₦144 billion market. 37,000 shops. One decision.</div>
+    </div>
+    <div class="fade-in-up delay-4" style="margin-top:32px;display:flex;gap:16px;align-items:center;justify-content:center;">
+      <span class="badge badge-green">🇳🇬 Made in Aba</span>
+      <span class="badge badge-navy">First State in Nigeria</span>
+      <span class="badge badge-gold">Powered by AI</span>
+    </div>
+    <div class="fade-in-up delay-5" style="margin-top:24px;font-size:13px;color:rgba(255,255,255,0.3);">
+      Press <kbd>R</kbd> to replay &nbsp;|&nbsp; <kbd>Space</kbd> to pause
+    </div>
+  </div>
+
+</div>
+
+<!-- Voiceover cue -->
+<div id="voiceover-cue"></div>
+
+<!-- Controls -->
+<div id="controls" class="visible">
+  <button class="ctrl-btn" id="btn-prev" title="Previous (←)">⏮</button>
+  <button class="ctrl-btn active" id="btn-play" title="Play/Pause (Space)">⏸</button>
+  <button class="ctrl-btn" id="btn-next" title="Next (→)">⏭</button>
+  <div id="slide-counter">1 / 17</div>
+  <div id="timer">00:00</div>
+  <button class="ctrl-btn" id="btn-restart" title="Restart (R)">🔄</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// PRESENTATION ENGINE
+// ═══════════════════════════════════════════════════
+
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progress-bar');
+  const counter = document.getElementById('slide-counter');
+  const timer = document.getElementById('timer');
+  const playBtn = document.getElementById('btn-play');
+  const cue = document.getElementById('voiceover-cue');
+  const totalSlides = slides.length;
+
+  let currentSlide = 0;
+  let isPlaying = true;
+  let slideTimer = null;
+  let elapsed = 0;
+  let elapsedTimer = null;
+  let slideStartTime = 0;
+
+  // Create particles
+  const particleContainer = document.getElementById('particles');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (8 + Math.random() * 12) + 's';
+    p.style.animationDelay = Math.random() * 10 + 's';
+    p.style.width = (1 + Math.random() * 3) + 'px';
+    p.style.height = p.style.width;
+    particleContainer.appendChild(p);
+  }
+
+  // Format time
+  function fmtTime(ms) {
+    const s = Math.floor(ms / 1000);
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+  }
+
+  // Show slide
+  function showSlide(index, direction = 'next') {
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'exit');
+      if (i === currentSlide && i !== index) {
+        s.classList.add('exit');
+      }
+    });
+
+    currentSlide = index;
+    const slide = slides[currentSlide];
+
+    // Small delay for exit animation
+    setTimeout(() => {
+      slides.forEach(s => s.classList.remove('exit'));
+      slide.classList.add('active');
+    }, 100);
+
+    // Update counter
+    counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+
+    // Update progress
+    progressBar.style.width = ((currentSlide + 1) / totalSlides * 100) + '%';
+
+    // Show voiceover cue
+    const cueText = slide.dataset.cue;
+    if (cueText) {
+      cue.textContent = cueText;
+      cue.classList.add('visible');
+    } else {
+      cue.classList.remove('visible');
+    }
+
+    // Schedule next slide
+    if (isPlaying) scheduleNext();
+  }
+
+  // Schedule next slide
+  function scheduleNext() {
+    clearTimeout(slideTimer);
+    const duration = parseInt(slides[currentSlide].dataset.duration) || 7000;
+    slideStartTime = Date.now();
+    slideTimer = setTimeout(() => {
+      if (currentSlide < totalSlides - 1) {
+        showSlide(currentSlide + 1);
+      } else {
+        pause();
+      }
+    }, duration);
+  }
+
+  // Play/Pause
+  function play() {
+    isPlaying = true;
+    playBtn.textContent = '⏸';
+    scheduleNext();
+  }
+
+  function pause() {
+    isPlaying = false;
+    playBtn.textContent = '▶';
+    clearTimeout(slideTimer);
+  }
+
+  function togglePlay() {
+    if (isPlaying) pause();
+    else play();
+  }
+
+  // Navigation
+  function nextSlide() {
+    if (currentSlide < totalSlides - 1) showSlide(currentSlide + 1);
+  }
+
+  function prevSlide() {
+    if (currentSlide > 0) showSlide(currentSlide - 1, 'prev');
+  }
+
+  function restart() {
+    elapsed = 0;
+    showSlide(0);
+    play();
+  }
+
+  // Elapsed timer
+  elapsedTimer = setInterval(() => {
+    if (isPlaying) elapsed += 1000;
+    timer.textContent = fmtTime(elapsed);
+  }, 1000);
+
+  // Event listeners
+  playBtn.addEventListener('click', togglePlay);
+  document.getElementById('btn-next').addEventListener('click', () => { nextSlide(); });
+  document.getElementById('btn-prev').addEventListener('click', () => { prevSlide(); });
+  document.getElementById('btn-restart').addEventListener('click', restart);
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    switch(e.key) {
+      case ' ':
+        e.preventDefault();
+        togglePlay();
+        break;
+      case 'ArrowRight':
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+        prevSlide();
+        break;
+      case 'r':
+      case 'R':
+        restart();
+        break;
+    }
+  });
+
+  // Start
+  showSlide(0);
+  play();
+
+  // Auto-hide controls after 3s of no mouse movement
+  let hideControlsTimer;
+  const controls = document.getElementById('controls');
+  document.addEventListener('mousemove', () => {
+    controls.classList.add('visible');
+    clearTimeout(hideControlsTimer);
+    hideControlsTimer = setTimeout(() => {
+      if (isPlaying) controls.classList.remove('visible');
+    }, 3000);
+  });
+
+})();
+</script>
+
+</body>
+</html>
