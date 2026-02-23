@@ -54,22 +54,33 @@
     justify-content: center;
     align-items: center;
     opacity: 0;
+    visibility: hidden;
     transform: scale(0.96);
     transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s 0.8s;
     pointer-events: none;
     padding: 60px 80px;
+    overflow: hidden;
+    z-index: 0;
   }
 
   .slide.active {
     opacity: 1;
+    visibility: visible;
     transform: scale(1);
     pointer-events: auto;
+    z-index: 2;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                visibility 0s 0s;
   }
 
   .slide.exit {
     opacity: 0;
+    visibility: visible;
     transform: scale(1.04);
+    z-index: 1;
   }
 
   /* ═══════════════════════════════════════════════════
@@ -908,13 +919,16 @@
       overflow: hidden;
     }
 
-    /* Slides stay absolute (required for JS engine) but scroll internally */
+    /* Slides stay absolute (required for JS engine) */
     .slide {
-      position: absolute;
-      inset: 0;
       padding: 24px 20px 100px;
       padding-top: 32px;
       justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    /* Only the active slide scrolls — prevents hidden slides bleeding through */
+    .slide.active {
       overflow-y: auto;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
