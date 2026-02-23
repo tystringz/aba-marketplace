@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=1280, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aba Digital Marketplace — Demo Walkthrough</title>
 <style>
   /* ═══════════════════════════════════════════════════
@@ -890,6 +890,174 @@
   @keyframes borderGlow {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
+  }
+
+  /* ═══════════════════════════════════════════════════
+     MOBILE RESPONSIVE
+     ═══════════════════════════════════════════════════ */
+  @media (max-width: 768px) {
+    body {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .slide {
+      padding: 24px 20px 100px;
+      position: relative;
+      min-height: 100vh;
+      height: auto;
+      justify-content: flex-start;
+      padding-top: 40px;
+    }
+
+    #presentation {
+      height: auto;
+      min-height: 100vh;
+    }
+
+    /* Typography */
+    .slide-title { font-size: 28px !important; margin-bottom: 16px; }
+    .slide-subtitle { font-size: 16px !important; margin-bottom: 24px; }
+    .section-label { font-size: 11px; letter-spacing: 2px; margin-bottom: 12px; }
+
+    /* Grids → stack */
+    .grid-2, .grid-3, .grid-4 {
+      grid-template-columns: 1fr !important;
+      gap: 12px;
+      max-width: 100%;
+    }
+
+    /* 5-col budget grid → 2 col + wrap */
+    [style*="grid-template-columns:repeat(5"] {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 10px !important;
+    }
+
+    /* Stat cards */
+    .stat-card { padding: 16px 14px; border-radius: 12px; }
+    .stat-value { font-size: 28px !important; }
+    .stat-label { font-size: 12px; }
+    .stat-sub { font-size: 11px; }
+
+    /* Controls bar */
+    #controls {
+      padding: 8px 16px;
+      gap: 8px;
+      bottom: 12px;
+    }
+    .ctrl-btn { width: 32px; height: 32px; font-size: 14px; }
+    #slide-counter { font-size: 11px; min-width: 48px; }
+    #timer { font-size: 10px; }
+
+    /* Voiceover cue */
+    #voiceover-cue {
+      bottom: 70px;
+      max-width: 90vw;
+      font-size: 13px;
+      padding: 10px 16px;
+    }
+
+    /* Key hints — hide on mobile */
+    .key-hint { display: none; }
+
+    /* Phone mockup */
+    .phone-frame {
+      width: 200px;
+      height: 360px;
+      border-radius: 28px;
+    }
+
+    /* Marketplace mockup */
+    .marketplace-mockup { max-width: 100%; border-radius: 12px; }
+    .mock-hero { padding: 20px; }
+    .mock-hero h2 { font-size: 18px !important; }
+    .mock-cats { gap: 12px; padding: 16px; flex-wrap: wrap; }
+    .mock-cat-icon { width: 44px; height: 44px; font-size: 20px; }
+    .mock-products { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px; }
+    .mock-nav { padding: 10px 14px; }
+    .mock-nav-brand { font-size: 14px; }
+    .mock-nav-links { font-size: 11px; gap: 10px; }
+
+    /* Chat */
+    .chat-container { max-width: 100%; padding: 16px; }
+
+    /* Dashboard cards */
+    .dash-card { padding: 14px; }
+    .dash-metric { font-size: 24px; }
+
+    /* Timeline */
+    .timeline { max-width: 100%; padding-left: 32px; }
+    .timeline-text { font-size: 14px; }
+
+    /* Legacy border */
+    .legacy-border { padding: 20px; }
+
+    /* Gov photo */
+    .gov-photo-large { width: 80px !important; height: 80px !important; }
+
+    /* Badges */
+    .badge { font-size: 9px; padding: 2px 6px; margin-bottom: 4px; }
+
+    /* Step rows */
+    .step-row { gap: 12px; }
+    .step-circle { width: 36px; height: 36px; font-size: 16px; }
+    .step-text { font-size: 14px; }
+
+    /* Inline overrides for common patterns */
+    [style*="max-width:700px"],
+    [style*="max-width:1000px"],
+    [style*="max-width:500px"],
+    [style*="max-width:640px"] {
+      max-width: 100% !important;
+    }
+
+    [style*="font-size:52px"] { font-size: 28px !important; }
+    [style*="font-size:44px"] { font-size: 26px !important; }
+    [style*="font-size:40px"] { font-size: 24px !important; }
+    [style*="font-size:36px"] { font-size: 22px !important; }
+    [style*="font-size:32px"] { font-size: 22px !important; }
+    [style*="font-size:28px"] { font-size: 20px !important; }
+    [style*="font-size:22px"] { font-size: 16px !important; }
+    [style*="font-size:20px"] { font-size: 15px !important; }
+
+    /* Newspaper mockup on Legacy slide */
+    [style*="background:white"][style*="border-radius:4px"] {
+      padding: 16px 18px !important;
+    }
+
+    /* Competitive positioning side-by-side → stack */
+    [style*="grid-template-columns:1fr 1fr"] {
+      grid-template-columns: 1fr !important;
+    }
+
+    /* Milestone payment bar */
+    [style*="display:flex"][style*="gap:16px"][style*="border-radius:10px"] {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* CTA steps */
+    [style*="display:flex"][style*="flex-direction:column"][style*="gap:16px"] {
+      gap: 10px !important;
+    }
+
+    /* Revenue projection boxes */
+    [style*="display:flex"][style*="gap:20px"][style*="max-width:700px"] {
+      flex-direction: column !important;
+      gap: 10px !important;
+    }
+
+    /* Progress bar */
+    #progress-container { height: 3px; }
+  }
+
+  /* Extra small phones */
+  @media (max-width: 380px) {
+    .slide { padding: 16px 14px 90px; padding-top: 32px; }
+    .slide-title { font-size: 24px !important; }
+    .grid-2, .grid-3, .grid-4 { gap: 8px; }
+    .stat-card { padding: 12px 10px; }
+    .stat-value { font-size: 24px !important; }
   }
 </style>
 </head>
