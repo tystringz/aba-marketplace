@@ -921,7 +921,7 @@
 
     /* Slides stay absolute (required for JS engine) */
     .slide {
-      padding: 24px 20px 100px;
+      padding: 24px 20px 80px;
       padding-top: 32px;
       justify-content: flex-start;
       overflow: hidden;
@@ -970,12 +970,9 @@
     #slide-counter { font-size: 11px; min-width: 48px; }
     #timer { font-size: 10px; }
 
-    /* Voiceover cue */
+    /* Voiceover cue — hide on mobile (presenter notes not needed on phone) */
     #voiceover-cue {
-      bottom: 70px;
-      max-width: 90vw;
-      font-size: 13px;
-      padding: 10px 16px;
+      display: none !important;
     }
 
     /* Key hints — hide on mobile (no keyboard) */
