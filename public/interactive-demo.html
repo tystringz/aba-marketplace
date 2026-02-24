@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aba Digital Marketplace — Interactive Click-Through Demo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #002868;
+    --gold: #C9A227;
+    --light-navy: #E8EDF5;
+    --success: #28a745;
+    --white: #ffffff;
+    --indigo: #5232F9;
+    --bg: #0f1117;
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: #e0e0e0;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  /* ══════════ BROWSER FRAME ══════════ */
+  #browser-frame {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1100px;
+    height: 700px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08);
+    background: #fff;
+  }
+
+  #browser-chrome {
+    height: 42px;
+    background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+
+  .traffic-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+  }
+  .traffic-dot.red { background: #ff5f56; }
+  .traffic-dot.yellow { background: #ffbd2e; }
+  .traffic-dot.green { background: #27c93f; }
+
+  #url-bar {
+    flex: 1;
+    margin-left: 12px;
+    background: #1a1a1a;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #url-bar .lock { color: var(--success); font-size: 10px; }
+
+  /* ══════════ VIEWPORT ══════════ */
+  #viewport {
+    width: 100%;
+    height: calc(100% - 42px);
+    position: relative;
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  /* ══════════ SCREENS ══════════ */
+  .screen {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+    overflow-y: auto;
+  }
+  .screen.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ══════════ CURSOR ══════════ */
+  #fake-cursor {
+    position: absolute;
+    width: 20px; height: 20px;
+    z-index: 9999;
+    pointer-events: none;
+    transition: left 0.8s cubic-bezier(0.25, 0.1, 0.25, 1),
+                top 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  #fake-cursor svg { width: 100%; height: 100%; }
+
+  /* Click ripple */
+  .click-ripple {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    opacity: 0;
+    transform: scale(0);
+    pointer-events: none;
+    z-index: 9998;
+    animation: ripple 0.6s ease-out forwards;
+  }
+  @keyframes ripple {
+    0% { opacity: 1; transform: scale(0); }
+    100% { opacity: 0; transform: scale(2.5); }
+  }
+
+  /* ══════════ HIGHLIGHT BOX ══════════ */
+  .highlight-box {
+    position: absolute;
+    border: 3px solid var(--gold);
+    border-radius: 8px;
+    z-index: 9000;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 0 4px rgba(201, 162, 39, 0.15), 0 0 30px rgba(201, 162, 39, 0.1);
+    transition: opacity 0.4s, top 0.5s, left 0.5s, width 0.5s, height 0.5s;
+  }
+  .highlight-box.visible { opacity: 1; }
+  .highlight-box::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 12px;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    animation: pulse-border 2s ease-in-out infinite;
+  }
+  @keyframes pulse-border {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+  }
+
+  /* ══════════ CALLOUT ══════════ */
+  #callout {
+    position: absolute;
+    z-index: 9500;
+    background: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    max-width: 320px;
+    opacity: 0;
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateY(8px);
+    pointer-events: none;
+    border: 1px solid rgba(201, 162, 39, 0.4);
+  }
+  #callout.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #callout .callout-title {
+    font-weight: 700;
+    color: var(--gold);
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  #callout .callout-body {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+  }
+  #callout .callout-icon {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  /* ══════════ BOTTOM CONTROLS ══════════ */
+  #demo-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(12px);
+    padding: 10px 24px;
+    border-radius: 40px;
+    border: 1px solid rgba(255,255,255,0.1);
+    z-index: 10000;
+  }
+  .demo-btn {
+    background: none; border: none; color: #ccc; cursor: pointer;
+    font-size: 16px; padding: 8px; border-radius: 50%;
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .demo-btn:hover { background: rgba(255,255,255,0.15); color: var(--gold); }
+  .demo-btn.active { color: var(--gold); }
+  #step-label {
+    font-size: 12px; color: rgba(255,255,255,0.5);
+    min-width: 160px; text-align: center;
+  }
+  #step-progress {
+    font-size: 11px; color: rgba(255,255,255,0.3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ══════════ SECTION TITLE OVERLAY ══════════ */
+  #section-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9800;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #section-overlay.visible { opacity: 1; pointer-events: auto; }
+  #section-overlay .section-num {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  #section-overlay .section-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  #section-overlay .section-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ══════════ SCREEN: PASSWORD GATE ══════════ */
+  .gate-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background: linear-gradient(135deg, var(--navy) 0%, #001a4d 100%);
+    color: white;
+    text-align: center;
+    padding: 40px;
+  }
+  .gate-logo { font-size: 48px; margin-bottom: 16px; }
+  .gate-title { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .gate-sub { font-size: 13px; opacity: 0.7; margin-bottom: 28px; }
+  .gate-input-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .gate-input {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 15px;
+    width: 260px;
+    outline: none;
+    letter-spacing: 2px;
+  }
+  .gate-btn {
+    padding: 12px 24px;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .gate-typing { border-color: var(--gold); background: rgba(201,162,39,0.1); }
+
+  /* ══════════ SCREEN: NAVBAR ══════════ */
+  .mock-nav {
+    background: var(--navy);
+    color: white;
+  }
+  .mock-state-bar {
+    background: linear-gradient(90deg, #006400, #228B22);
+    padding: 5px 20px;
+    font-size: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mock-nav-main {
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mock-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mock-gov-photo {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #ffd700);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    border: 2px solid var(--gold);
+  }
+  .mock-nav-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 8px 16px;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.2);
+    flex-wrap: wrap;
+  }
+  .mock-tab {
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
+  }
+  .mock-tab.active {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    border-color: var(--gold);
+  }
+
+  /* ══════════ SCREEN: HOME ══════════ */
+  .mock-body { padding: 16px 20px; overflow-y: auto; height: calc(100% - 120px); }
+
+  .mock-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 14px;
+    border: 1px solid #eee;
+  }
+
+  .mock-hero {
+    background: linear-gradient(135deg, var(--light-navy), #fff);
+    border: 2px solid var(--navy);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .mock-hero-text .label { font-size: 10px; color: var(--gold); font-weight: 700; letter-spacing: 1px; }
+  .mock-hero-text .name { font-size: 18px; font-weight: 700; color: var(--navy); margin: 4px 0; }
+  .mock-hero-text .quote { font-size: 12px; color: #555; font-style: italic; line-height: 1.5; }
+
+  .mock-proverb {
+    background: linear-gradient(135deg, var(--navy), #001a4d);
+    color: #fff;
+    text-align: center;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .mock-proverb .igbo { font-size: 15px; font-style: italic; }
+  .mock-proverb .eng { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+
+  .mock-stats-bar {
+    background: var(--navy);
+    color: white;
+    text-align: center;
+    padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-bottom: 14px;
+  }
+  .mock-stat-val { font-size: 24px; font-weight: 800; color: var(--gold); }
+  .mock-stat-label { font-size: 10px; opacity: 0.8; margin-top: 2px; }
+
+  .mock-trust {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 14px;
+    padding: 10px;
+  }
+  .mock-trust-item {
+    text-align: center;
+    font-size: 10px;
+    color: #555;
+  }
+  .mock-trust-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--light-navy);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 4px;
+    font-size: 16px;
+  }
+
+  .mock-cats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .mock-cat {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #eee;
+    cursor: default;
+  }
+  .mock-cat-icon {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    margin: 0 auto 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .mock-cat-name { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .mock-cat-count { font-size: 10px; color: var(--gold); }
+
+  .mock-products-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .mock-product-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid #eee;
+    text-align: center;
+  }
+  .mock-product-img {
+    width: 80px; height: 80px;
+    border-radius: 12px;
+    margin: 0 auto 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+  }
+  .mock-product-name { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .mock-product-price { font-size: 16px; font-weight: 800; color: var(--gold); margin: 2px 0; }
+  .mock-product-seller { font-size: 10px; color: #888; }
+  .mock-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    border-radius: 3px;
+    color: #fff;
+    margin: 4px 2px;
+  }
+  .mock-badge.navy { background: var(--navy); }
+  .mock-badge.gold { background: var(--gold); }
+  .mock-badge.green { background: var(--success); }
+
+  .mock-add-btn {
+    width: 100%;
+    padding: 8px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 6px;
+    cursor: default;
+  }
+
+  .mock-access-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    text-align: center;
+    padding: 16px;
+  }
+  .mock-access-icon { font-size: 24px; margin-bottom: 4px; }
+  .mock-access-title { font-size: 12px; font-weight: 700; color: var(--navy); }
+  .mock-access-desc { font-size: 10px; color: #888; }
+
+  .mock-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 10px;
+  }
+
+  /* ══════════ SCREEN: LISTINGS ══════════ */
+  .mock-breadcrumb { font-size: 11px; color: #888; margin-bottom: 6px; }
+  .mock-page-title { font-size: 20px; font-weight: 800; color: var(--navy); margin-bottom: 12px; }
+  .mock-stars { color: var(--gold); font-size: 11px; }
+
+  /* ══════════ SCREEN: SELLER PROFILE ══════════ */
+  .mock-seller-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .mock-seller-avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    background: var(--navy);
+    color: var(--gold);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800;
+    border: 3px solid var(--gold);
+  }
+  .mock-seller-name { font-size: 20px; font-weight: 800; color: var(--navy); }
+  .mock-seller-meta { font-size: 12px; color: #666; }
+  .mock-seller-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .mock-seller-stat {
+    background: var(--light-navy);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .mock-seller-stat-val { font-size: 20px; font-weight: 800; color: var(--navy); }
+  .mock-seller-stat-label { font-size: 10px; color: #666; }
+
+  /* ══════════ SCREEN: AI PLATFORM ══════════ */
+  .mock-ai-hero {
+    background: linear-gradient(135deg, var(--navy), var(--indigo));
+    color: #fff;
+    padding: 30px;
+    text-align: center;
+    border-radius: 0 0 16px 16px;
+    margin-bottom: 14px;
+  }
+  .mock-ai-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  .mock-ai-sub { font-size: 12px; opacity: 0.7; }
+  .mock-lang-pills {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .mock-lang-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+  }
+  .mock-lang-pill.active {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .mock-chat-area {
+    padding: 16px;
+  }
+  .mock-chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .mock-chat-bot {
+    background: var(--light-navy);
+    color: var(--navy);
+    border-bottom-left-radius: 4px;
+  }
+  .mock-chat-user {
+    background: var(--navy);
+    color: #fff;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  }
+  .mock-chat-input-bar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    border-top: 1px solid #eee;
+    background: #fff;
+  }
+  .mock-chat-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #333;
+    background: #f9f9f9;
+  }
+  .mock-chat-send {
+    padding: 10px 18px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  /* ══════════ SCREEN: ONBOARDING ══════════ */
+  .mock-onboard-steps {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px;
+    background: #fff;
+    margin-bottom: 14px;
+  }
+  .mock-step-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    background: #ddd;
+    color: #888;
+  }
+  .mock-step-circle.done { background: var(--success); color: #fff; }
+  .mock-step-circle.current { background: var(--navy); color: #fff; }
+  .mock-onboard-form {
+    background: #fff;
+    border-radius: 10px;
+    padding: 24px;
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .mock-form-label { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+  .mock-form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-bottom: 12px;
+    background: #f9f9f9;
+    color: #333;
+  }
+  .mock-form-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* ══════════ SCREEN: DASHBOARD ══════════ */
+  .mock-dash-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .mock-dash-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+    border: 1px solid #eee;
+    border-top: 3px solid var(--gold);
+  }
+  .mock-dash-val { font-size: 22px; font-weight: 800; color: var(--navy); }
+  .mock-dash-label { font-size: 10px; color: #888; margin-top: 2px; }
+  .mock-dash-chart {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    border: 1px solid #eee;
+    margin-bottom: 14px;
+    min-height: 140px;
+    position: relative;
+  }
+  .mock-chart-bar {
+    display: inline-block;
+    width: 32px;
+    background: linear-gradient(180deg, var(--gold), var(--navy));
+    border-radius: 4px 4px 0 0;
+    margin: 0 6px;
+    vertical-align: bottom;
+  }
+  .mock-chart-bars {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 100px;
+    margin-top: 10px;
+  }
+
+  /* Footer */
+  .mock-footer {
+    background: var(--navy);
+    color: #fff;
+    text-align: center;
+    padding: 12px;
+    font-size: 11px;
+    border-radius: 10px;
+  }
+
+  /* ══════════ SCROLL ANIMATION ══════════ */
+  .screen-inner {
+    transition: transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════ BROWSER FRAME ═══════ -->
+<div id="browser-frame">
+  <div id="browser-chrome">
+    <div class="traffic-dot red"></div>
+    <div class="traffic-dot yellow"></div>
+    <div class="traffic-dot green"></div>
+    <div id="url-bar">
+      <span class="lock">🔒</span>
+      <span id="url-text">aba-marketplace.gov.ng</span>
+    </div>
+  </div>
+
+  <div id="viewport">
+
+    <!-- SCREEN 0: PASSWORD GATE -->
+    <div class="screen active" data-screen="gate">
+      <div class="gate-screen">
+        <div class="gate-logo">🏪</div>
+        <div class="gate-title">Aba Digital Marketplace</div>
+        <div class="gate-sub">Authorized Access — Enter access code to continue</div>
+        <div class="gate-input-wrap">
+          <input class="gate-input" id="gate-input" type="password" placeholder="Enter access code" readonly>
+          <button class="gate-btn" id="gate-btn">Enter →</button>
+        </div>
+        <div style="margin-top: 10px; font-size: 11px; opacity: 0.5;">An initiative of Abia State Government</div>
+      </div>
+    </div>
+
+    <!-- SCREEN 1: HOME -->
+    <div class="screen" data-screen="home">
+      <div class="mock-nav">
+        <div class="mock-state-bar">
+          <div>🦁 <b>ABIA STATE GOVERNMENT</b> <span style="opacity:0.7">• God's Own State</span></div>
+          <div>🇳🇬 Nigeria</div>
+        </div>
+        <div class="mock-nav-main">
+          <div class="mock-nav-brand">
+            <div class="mock-gov-photo">👤</div>
+            <div>
+              <div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div>
+              <div style="font-size:9px;opacity:0.7">An Initiative of His Excellency Dr. Alex Otti, OFR</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:10px;color:#0f0">● LIVE</span>
+          </div>
+        </div>
+        <div class="mock-nav-tabs">
+          <span class="mock-tab">🏛️ Overview</span>
+          <span class="mock-tab">📍 Why Aba</span>
+          <span class="mock-tab">🎯 Quick Wins</span>
+          <span class="mock-tab">💰 Pilot Ask</span>
+          <span class="mock-tab">♻️ Sustainability</span>
+          <span class="mock-tab">➡️ Next Steps</span>
+          <span class="mock-tab">🤖 AI Platform</span>
+          <span class="mock-tab">📝 Seller Signup</span>
+          <span class="mock-tab active">🏠 Home</span>
+          <span class="mock-tab">📦 Products</span>
+          <span class="mock-tab">👤 Sellers</span>
+          <span class="mock-tab">📊 Dashboard</span>
+        </div>
+      </div>
+      <div class="mock-body" id="home-body">
+        <div class="screen-inner" id="home-inner">
+          <div class="mock-card mock-hero" id="hl-governor">
+            <div class="mock-gov-photo" style="width:80px;height:80px;font-size:36px;flex-shrink:0">👤</div>
+            <div class="mock-hero-text">
+              <div class="label">A MESSAGE FROM HIS EXCELLENCY</div>
+              <div class="name">Dr. Alex Chioma Otti, OFR</div>
+              <div class="quote">"Through GADA, we are building the digital infrastructure to transform Aba into a billion-dollar fashion and manufacturing ecosystem."</div>
+            </div>
+          </div>
+
+          <div class="mock-proverb" id="hl-proverb">
+            <div class="igbo">"Ahịa dị mma na-ere onwe ya"</div>
+            <div class="eng">A good market sells itself — Igbo Proverb</div>
+          </div>
+
+          <div class="mock-stats-bar" id="hl-stats">
+            <div><div class="mock-stat-val">₦144B</div><div class="mock-stat-label">Annual Trade Volume</div></div>
+            <div><div class="mock-stat-val">37,000</div><div class="mock-stat-label">Shops in Ariaria</div></div>
+            <div><div class="mock-stat-val">160,000+</div><div class="mock-stat-label">Artisans</div></div>
+            <div><div class="mock-stat-val">90%+</div><div class="mock-stat-label">Literacy Rate</div></div>
+          </div>
+
+          <div class="mock-trust" id="hl-trust">
+            <div class="mock-trust-item"><div class="mock-trust-icon">🔒</div>256-bit SSL</div>
+            <div class="mock-trust-item"><div class="mock-trust-icon">📋</div>NDPR Compliant</div>
+            <div class="mock-trust-item"><div class="mock-trust-icon">🏦</div>Bank-Level</div>
+            <div class="mock-trust-item"><div class="mock-trust-icon">✅</div>NITDA Registered</div>
+          </div>
+
+          <div class="mock-section-title">SHOP BY CATEGORY</div>
+          <div class="mock-cats" id="hl-categories">
+            <div class="mock-cat"><div class="mock-cat-icon" style="background:#f5e6d3">👞</div><div class="mock-cat-name">Footwear</div><div class="mock-cat-count">110,000+ makers</div></div>
+            <div class="mock-cat"><div class="mock-cat-icon" style="background:#e8d5c4">💼</div><div class="mock-cat-name">Bags</div><div class="mock-cat-count">Leather goods</div></div>
+            <div class="mock-cat" id="fashion-cat"><div class="mock-cat-icon" style="background:#d5e8d4">👗</div><div class="mock-cat-name">Fashion</div><div class="mock-cat-count">50,000+ tailors</div></div>
+            <div class="mock-cat"><div class="mock-cat-icon" style="background:#d4d5e8">🧵</div><div class="mock-cat-name">Leather</div><div class="mock-cat-count">Raw materials</div></div>
+          </div>
+
+          <div class="mock-section-title">FEATURED PRODUCTS</div>
+          <div class="mock-products-grid" id="hl-featured">
+            <div class="mock-product-card">
+              <div class="mock-product-img" style="background:linear-gradient(135deg,#f5e6d3,#e8d5c4)">👞</div>
+              <div class="mock-product-name">Men's Leather Loafers</div>
+              <div class="mock-product-price">₦12,500</div>
+              <div class="mock-product-seller">Okechukwu Footwear</div>
+              <div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div>
+            </div>
+            <div class="mock-product-card">
+              <div class="mock-product-img" style="background:linear-gradient(135deg,#e8d5c4,#d4c4b0)">👡</div>
+              <div class="mock-product-name">Ladies Sandals</div>
+              <div class="mock-product-price">₦4,500</div>
+              <div class="mock-product-seller">Mama Ada Shoes</div>
+              <div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div>
+            </div>
+            <div class="mock-product-card" id="product-executive-bag">
+              <div class="mock-product-img" style="background:linear-gradient(135deg,#c4b09a,#a08060)">💼</div>
+              <div class="mock-product-name">Executive Bag</div>
+              <div class="mock-product-price">₦25,000</div>
+              <div class="mock-product-seller">Chisom Leather Works</div>
+              <div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div>
+            </div>
+          </div>
+
+          <div class="mock-card" id="hl-access">
+            <div class="mock-section-title">ACCESS ANYWHERE</div>
+            <div class="mock-access-grid">
+              <div><div class="mock-access-icon">📱</div><div class="mock-access-title">Mobile App</div><div class="mock-access-desc">Android & iOS</div></div>
+              <div><div class="mock-access-icon">💬</div><div class="mock-access-title">WhatsApp</div><div class="mock-access-desc">Order via chat</div></div>
+              <div><div class="mock-access-icon">📞</div><div class="mock-access-title">USSD</div><div class="mock-access-desc">*384*ABA#</div></div>
+              <div><div class="mock-access-icon">🌐</div><div class="mock-access-title">Web</div><div class="mock-access-desc">Full features</div></div>
+            </div>
+          </div>
+
+          <div class="mock-footer">An Initiative of the Abia State Government • Powered by GADA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: LISTINGS -->
+    <div class="screen" data-screen="listings">
+      <div class="mock-nav">
+        <div class="mock-state-bar"><div>🦁 <b>ABIA STATE GOVERNMENT</b></div><div>🇳🇬 Nigeria</div></div>
+        <div class="mock-nav-main"><div class="mock-nav-brand"><div class="mock-gov-photo">👤</div><div><div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div></div></div><div><button style="background:var(--gold);color:var(--navy);border:none;padding:6px 14px;border-radius:6px;font-weight:700;font-size:12px">Cart (1)</button></div></div>
+        <div class="mock-nav-tabs"><span class="mock-tab">🏠 Home</span><span class="mock-tab active">📦 Products</span><span class="mock-tab">👤 Sellers</span><span class="mock-tab">📊 Dashboard</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-breadcrumb">Home › All Products</div>
+        <div class="mock-page-title">ALL PRODUCTS</div>
+        <div class="mock-products-grid" id="hl-all-products">
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#f5e6d3,#e8d5c4)">👞</div><div class="mock-product-name">Men's Leather Loafers</div><div class="mock-product-price">₦12,500</div><div class="mock-product-seller">Okechukwu Footwear</div><div class="mock-stars">★★★★★</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn">Add to Cart</button></div>
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#e8d5c4,#d4c4b0)">👡</div><div class="mock-product-name">Ladies Sandals</div><div class="mock-product-price">₦4,500</div><div class="mock-product-seller">Mama Ada Shoes</div><div class="mock-stars">★★★★☆</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn">Add to Cart</button></div>
+          <div class="mock-product-card" id="click-exec-bag"><div class="mock-product-img" style="background:linear-gradient(135deg,#c4b09a,#a08060)">💼</div><div class="mock-product-name">Executive Bag</div><div class="mock-product-price">₦25,000</div><div class="mock-product-seller">Chisom Leather Works</div><div class="mock-stars">★★★★★</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn" id="add-cart-btn">Add to Cart</button></div>
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#333,#555)">👔</div><div class="mock-product-name">Oxford Shoes</div><div class="mock-product-price">₦18,000</div><div class="mock-product-seller">Okechukwu Footwear</div><div class="mock-stars">★★★★★</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn">Add to Cart</button></div>
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#a03030,#802020)">👜</div><div class="mock-product-name">Ladies Handbag</div><div class="mock-product-price">₦15,000</div><div class="mock-product-seller">Chisom Leather Works</div><div class="mock-stars">★★★★★</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn">Add to Cart</button></div>
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#2a8a2a,#4a6a4a)">🩴</div><div class="mock-product-name">Palm Slippers</div><div class="mock-product-price">₦2,500</div><div class="mock-product-seller">Okechukwu Footwear</div><div class="mock-stars">★★★★☆</div><div><span class="mock-badge navy">✓ VERIFIED</span><span class="mock-badge gold">MADE IN ABA</span></div><button class="mock-add-btn">Add to Cart</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 3: SELLER PROFILE -->
+    <div class="screen" data-screen="seller">
+      <div class="mock-nav">
+        <div class="mock-state-bar"><div>🦁 <b>ABIA STATE GOVERNMENT</b></div><div>🇳🇬 Nigeria</div></div>
+        <div class="mock-nav-main"><div class="mock-nav-brand"><div class="mock-gov-photo">👤</div><div><div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div></div></div></div>
+        <div class="mock-nav-tabs"><span class="mock-tab">🏠 Home</span><span class="mock-tab">📦 Products</span><span class="mock-tab active">👤 Sellers</span><span class="mock-tab">📊 Dashboard</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-card">
+          <div class="mock-seller-header">
+            <div class="mock-seller-avatar">CL</div>
+            <div>
+              <div class="mock-seller-name">Chisom Leather Works</div>
+              <div class="mock-seller-meta"><span class="mock-badge green">✓ NIN VERIFIED</span> <span class="mock-badge gold">MADE IN ABA</span></div>
+              <div class="mock-seller-meta" style="margin-top:4px">★★★★★ (234 reviews) • Cemetery Market, Aba</div>
+            </div>
+          </div>
+        </div>
+        <div class="mock-seller-stats" id="hl-seller-stats">
+          <div class="mock-seller-stat"><div class="mock-seller-stat-val">687</div><div class="mock-seller-stat-label">Total Orders</div></div>
+          <div class="mock-seller-stat"><div class="mock-seller-stat-val">2hrs</div><div class="mock-seller-stat-label">Response Time</div></div>
+          <div class="mock-seller-stat"><div class="mock-seller-stat-val">4.9</div><div class="mock-seller-stat-label">Rating</div></div>
+          <div class="mock-seller-stat"><div class="mock-seller-stat-val">2022</div><div class="mock-seller-stat-label">Member Since</div></div>
+        </div>
+        <div class="mock-section-title">Chisom's Products</div>
+        <div class="mock-products-grid">
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#c4b09a,#a08060)">💼</div><div class="mock-product-name">Executive Bag</div><div class="mock-product-price">₦25,000</div><button class="mock-add-btn">Add to Cart</button></div>
+          <div class="mock-product-card"><div class="mock-product-img" style="background:linear-gradient(135deg,#a03030,#802020)">👜</div><div class="mock-product-name">Ladies Handbag</div><div class="mock-product-price">₦15,000</div><button class="mock-add-btn">Add to Cart</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 4: ONBOARDING -->
+    <div class="screen" data-screen="onboarding">
+      <div class="mock-nav">
+        <div class="mock-state-bar"><div>🦁 <b>ABIA STATE GOVERNMENT</b></div><div>🇳🇬 Nigeria</div></div>
+        <div class="mock-nav-main"><div class="mock-nav-brand"><div class="mock-gov-photo">👤</div><div><div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div></div></div></div>
+        <div class="mock-nav-tabs"><span class="mock-tab">🏠 Home</span><span class="mock-tab active">📝 Seller Signup</span></div>
+      </div>
+      <div class="mock-body">
+        <div style="text-align:center;padding:16px 0">
+          <div class="mock-page-title">Seller Onboarding</div>
+          <div style="font-size:12px;color:#666;margin-bottom:12px">Join Aba's trusted marketplace in 5 easy steps</div>
+        </div>
+        <div class="mock-onboard-steps" id="hl-steps">
+          <div style="text-align:center"><div class="mock-step-circle done">✓</div><div style="font-size:9px;margin-top:4px;color:#666">Phone</div></div>
+          <div style="text-align:center"><div class="mock-step-circle current">2</div><div style="font-size:9px;margin-top:4px;color:var(--navy);font-weight:700">NIN</div></div>
+          <div style="text-align:center"><div class="mock-step-circle">3</div><div style="font-size:9px;margin-top:4px;color:#666">Business</div></div>
+          <div style="text-align:center"><div class="mock-step-circle">4</div><div style="font-size:9px;margin-top:4px;color:#666">Bank</div></div>
+          <div style="text-align:center"><div class="mock-step-circle">5</div><div style="font-size:9px;margin-top:4px;color:#666">Done</div></div>
+        </div>
+        <div class="mock-onboard-form" id="hl-nin-form">
+          <div style="text-align:center;margin-bottom:16px">
+            <div style="font-size:28px;margin-bottom:6px">🪪</div>
+            <div style="font-size:16px;font-weight:700;color:var(--navy)">NIN Verification</div>
+            <div style="font-size:11px;color:#888">Enter your National Identification Number</div>
+          </div>
+          <div class="mock-form-label">NIN Number</div>
+          <div class="mock-form-input" id="nin-input">12345678901</div>
+          <div class="mock-form-label">Full Name (as on NIN)</div>
+          <div class="mock-form-input">Chisom Okafor</div>
+          <button class="mock-form-btn" id="verify-nin-btn">Verify Identity →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCREEN 5: AI PLATFORM -->
+    <div class="screen" data-screen="ai">
+      <div class="mock-nav">
+        <div class="mock-state-bar"><div>🦁 <b>ABIA STATE GOVERNMENT</b></div><div>🇳🇬 Nigeria</div></div>
+        <div class="mock-nav-main"><div class="mock-nav-brand"><div class="mock-gov-photo">👤</div><div><div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div></div></div></div>
+        <div class="mock-nav-tabs"><span class="mock-tab">🏠 Home</span><span class="mock-tab active">🤖 AI Platform</span></div>
+      </div>
+      <div class="mock-ai-hero" id="hl-ai-hero">
+        <div style="font-size:36px;margin-bottom:6px">🤖</div>
+        <div class="mock-ai-title">AI Shopping Assistant</div>
+        <div class="mock-ai-sub">Shop in your language — powered by AI</div>
+        <div class="mock-lang-pills" id="hl-langs">
+          <span class="mock-lang-pill">🟢 Igbo</span>
+          <span class="mock-lang-pill active">⚪ English</span>
+          <span class="mock-lang-pill">🟡 Yoruba</span>
+          <span class="mock-lang-pill">🔴 Hausa</span>
+          <span class="mock-lang-pill">🔵 Pidgin</span>
+        </div>
+      </div>
+      <div class="mock-chat-area" id="hl-chat">
+        <div class="mock-chat-bubble mock-chat-bot">Welcome! I'm your AI shopping assistant. How can I help you find Made-in-Aba products today?</div>
+        <div class="mock-chat-bubble mock-chat-user">I need leather bags for wholesale</div>
+        <div class="mock-chat-bubble mock-chat-bot">Great choice! I found <b>3 verified leather bag sellers</b> in Aba. Chisom Leather Works has the highest rating (4.9★) with wholesale options starting at ₦15,000. Want me to show their catalog?</div>
+        <div class="mock-chat-bubble mock-chat-user" id="chat-igbo-msg" style="display:none">Achọrọ m igosi bags</div>
+        <div class="mock-chat-bubble mock-chat-bot" id="chat-igbo-resp" style="display:none">Nnọọ! A chọtara m <b>ndị na-ere akpa</b> atọ na Aba. Chisom Leather Works nwere ọkwa kachasị elu (4.9★). Ị chọrọ ka m gosi gị katalọgụ ha?</div>
+      </div>
+      <div class="mock-chat-input-bar">
+        <input class="mock-chat-input" placeholder="Ask me anything about Aba products..." readonly>
+        <button class="mock-chat-send">Send</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 6: DASHBOARD -->
+    <div class="screen" data-screen="dashboard">
+      <div class="mock-nav">
+        <div class="mock-state-bar"><div>🦁 <b>ABIA STATE GOVERNMENT</b></div><div>🇳🇬 Nigeria</div></div>
+        <div class="mock-nav-main"><div class="mock-nav-brand"><div class="mock-gov-photo">👤</div><div><div style="font-weight:700;font-size:15px">ABA DIGITAL MARKETPLACE</div></div></div></div>
+        <div class="mock-nav-tabs"><span class="mock-tab">🏠 Home</span><span class="mock-tab">📦 Products</span><span class="mock-tab active">📊 Dashboard</span></div>
+      </div>
+      <div class="mock-body">
+        <div class="mock-page-title">Government Dashboard</div>
+        <div style="font-size:12px;color:#888;margin-bottom:14px">Real-time marketplace analytics for Abia State Government</div>
+        <div class="mock-dash-grid" id="hl-dash-stats">
+          <div class="mock-dash-card"><div class="mock-dash-val">2,847</div><div class="mock-dash-label">Active Sellers</div></div>
+          <div class="mock-dash-card"><div class="mock-dash-val">12,456</div><div class="mock-dash-label">Products Listed</div></div>
+          <div class="mock-dash-card"><div class="mock-dash-val">₦8.2M</div><div class="mock-dash-label">Revenue (30d)</div></div>
+          <div class="mock-dash-card"><div class="mock-dash-val">98.2%</div><div class="mock-dash-label">Uptime</div></div>
+        </div>
+        <div class="mock-dash-chart" id="hl-chart">
+          <div class="mock-section-title">Monthly Transaction Volume</div>
+          <div class="mock-chart-bars">
+            <div class="mock-chart-bar" style="height:40px"></div>
+            <div class="mock-chart-bar" style="height:55px"></div>
+            <div class="mock-chart-bar" style="height:48px"></div>
+            <div class="mock-chart-bar" style="height:70px"></div>
+            <div class="mock-chart-bar" style="height:62px"></div>
+            <div class="mock-chart-bar" style="height:85px"></div>
+            <div class="mock-chart-bar" style="height:78px"></div>
+            <div class="mock-chart-bar" style="height:95px"></div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:24px;font-size:9px;color:#999;margin-top:8px">
+            <span>Jun</span><span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span><span>Jan</span>
+          </div>
+        </div>
+        <div class="mock-card" id="hl-ai-query">
+          <div class="mock-section-title">🤖 AI Query Console</div>
+          <div style="font-size:12px;color:#666;margin-bottom:10px">Ask questions about marketplace performance</div>
+          <div style="background:#f0f0f0;padding:10px 14px;border-radius:8px;font-size:13px;color:#333;font-family:monospace">"Show me top sellers by revenue this month"</div>
+          <div style="margin-top:10px;padding:10px 14px;background:var(--light-navy);border-radius:8px;font-size:12px;color:var(--navy)"><b>AI Response:</b> The top 3 sellers by revenue are: 1) Chisom Leather Works (₦1.2M), 2) Okechukwu Footwear (₦980K), 3) Mama Ada Shoes (₦720K).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HIGHLIGHT BOX -->
+    <div class="highlight-box" id="highlight-box"></div>
+
+    <!-- CALLOUT -->
+    <div id="callout">
+      <div class="callout-icon" id="callout-icon"></div>
+      <div class="callout-title" id="callout-title"></div>
+      <div class="callout-body" id="callout-body"></div>
+    </div>
+
+    <!-- FAKE CURSOR -->
+    <div id="fake-cursor">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M5 3l14 8-6.5 1.5L11 19z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <!-- SECTION OVERLAY -->
+    <div id="section-overlay">
+      <div class="section-num" id="section-num"></div>
+      <div class="section-title" id="section-title"></div>
+      <div class="section-desc" id="section-desc"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ CONTROLS ═══════ -->
+<div id="demo-controls">
+  <button class="demo-btn" id="btn-prev" title="Previous">◀</button>
+  <button class="demo-btn" id="btn-play" title="Play/Pause">▶</button>
+  <button class="demo-btn" id="btn-next" title="Next">▶</button>
+  <div id="step-label">Password Gate</div>
+  <div id="step-progress">1 / 24</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// INTERACTIVE DEMO ENGINE
+// ═══════════════════════════════════════════════════
+
+const cursor = document.getElementById('fake-cursor');
+const highlightBox = document.getElementById('highlight-box');
+const callout = document.getElementById('callout');
+const calloutIcon = document.getElementById('callout-icon');
+const calloutTitle = document.getElementById('callout-title');
+const calloutBody = document.getElementById('callout-body');
+const sectionOverlay = document.getElementById('section-overlay');
+const sectionNum = document.getElementById('section-num');
+const sectionTitle = document.getElementById('section-title');
+const sectionDesc = document.getElementById('section-desc');
+const stepLabel = document.getElementById('step-label');
+const stepProgress = document.getElementById('step-progress');
+const urlText = document.getElementById('url-text');
+
+let currentStep = 0;
+let isPlaying = false;
+let playTimer = null;
+
+// Cursor position
+function moveCursor(x, y) {
+  cursor.style.left = x + 'px';
+  cursor.style.top = y + 'px';
+}
+
+function clickAt(x, y) {
+  const ripple = document.createElement('div');
+  ripple.className = 'click-ripple';
+  ripple.style.left = (x - 20) + 'px';
+  ripple.style.top = (y - 20) + 'px';
+  document.getElementById('viewport').appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+}
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`[data-screen="${name}"]`);
+  if (target) target.classList.add('active');
+}
+
+function showHighlight(el, padX = 6, padY = 6) {
+  if (!el) { highlightBox.classList.remove('visible'); return; }
+  const rect = el.getBoundingClientRect();
+  const vpRect = document.getElementById('viewport').getBoundingClientRect();
+  highlightBox.style.left = (rect.left - vpRect.left - padX) + 'px';
+  highlightBox.style.top = (rect.top - vpRect.top - padY) + 'px';
+  highlightBox.style.width = (rect.width + padX * 2) + 'px';
+  highlightBox.style.height = (rect.height + padY * 2) + 'px';
+  highlightBox.classList.add('visible');
+}
+
+function hideHighlight() {
+  highlightBox.classList.remove('visible');
+}
+
+function showCallout(icon, title, body, x, y) {
+  calloutIcon.textContent = icon;
+  calloutTitle.textContent = title;
+  calloutBody.textContent = body;
+  callout.style.left = x + 'px';
+  callout.style.top = y + 'px';
+  callout.classList.add('visible');
+}
+
+function hideCallout() {
+  callout.classList.remove('visible');
+}
+
+function showSection(num, title, desc) {
+  sectionNum.textContent = num;
+  sectionTitle.textContent = title;
+  sectionDesc.textContent = desc;
+  sectionOverlay.classList.add('visible');
+}
+
+function hideSection() {
+  sectionOverlay.classList.remove('visible');
+}
+
+function typeInto(el, text, cb) {
+  el.value = '';
+  el.classList.add('gate-typing');
+  let i = 0;
+  const interval = setInterval(() => {
+    el.value += text[i];
+    i++;
+    if (i >= text.length) {
+      clearInterval(interval);
+      el.classList.remove('gate-typing');
+      if (cb) setTimeout(cb, 400);
+    }
+  }, 80);
+}
+
+function scrollInner(id, amount, duration = 800) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.transform = `translateY(-${amount}px)`;
+  }
+}
+
+function resetScroll(id) {
+  const el = document.getElementById(id);
+  if (el) el.style.transform = 'translateY(0)';
+}
+
+// ═══════════════════════════════════════════════════
+// DEMO STEPS — each step is an action sequence
+// ═══════════════════════════════════════════════════
+const steps = [
+  // ── PASSWORD GATE ──
+  {
+    label: 'Password Protected Access',
+    screen: 'gate',
+    url: 'aba-marketplace.gov.ng',
+    actions: (done) => {
+      hideHighlight(); hideCallout(); hideSection();
+      moveCursor(480, 280);
+      setTimeout(() => {
+        showHighlight(document.querySelector('.gate-input-wrap'), 10, 10);
+        showCallout('🔒', 'SECURE ACCESS', 'Password-protected portal ensures only authorized stakeholders can view the demo', 350, 370);
+      }, 600);
+      setTimeout(done, 4500);
+    }
+  },
+  {
+    label: 'Entering access code...',
+    screen: 'gate',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(440, 290);
+      setTimeout(() => clickAt(440, 290), 400);
+      setTimeout(() => {
+        typeInto(document.getElementById('gate-input'), 'StringzAbia2026');
+      }, 800);
+      setTimeout(done, 3500);
+    }
+  },
+  {
+    label: 'Click Enter to access',
+    screen: 'gate',
+    actions: (done) => {
+      const btn = document.getElementById('gate-btn');
+      const rect = btn.getBoundingClientRect();
+      const vpRect = document.getElementById('viewport').getBoundingClientRect();
+      moveCursor(rect.left - vpRect.left + 40, rect.top - vpRect.top + 12);
+      setTimeout(() => {
+        clickAt(rect.left - vpRect.left + 40, rect.top - vpRect.top + 12);
+        hideHighlight();
+      }, 800);
+      setTimeout(done, 2000);
+    }
+  },
+
+  // ── SECTION: HOME PAGE ──
+  {
+    label: 'Marketplace Home',
+    screen: 'home',
+    actions: (done) => {
+      hideHighlight(); hideCallout(); resetScroll('home-inner');
+      showSection('SECTION 01', 'Marketplace Homepage', 'The public-facing storefront for buyers');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'Governor\'s Message',
+    screen: 'home',
+    url: 'aba-marketplace.gov.ng/home',
+    actions: (done) => {
+      hideSection();
+      moveCursor(400, 200);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-governor'), 8, 8);
+        showCallout('🏛️', 'GOVERNOR ENDORSEMENT', 'Dr. Alex Otti\'s message gives the platform official government backing and builds public trust', 580, 135);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'Market Statistics',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(450, 310);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-stats'), 6, 6);
+        showCallout('📊', 'REAL MARKET DATA', '₦144B annual trade, 37,000 shops, 160,000+ artisans — all research-backed statistics from 14+ sources', 600, 260);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'Trust & Security Badges',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(430, 370);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-trust'), 6, 6);
+        showCallout('🔐', 'TRUST INDICATORS', '256-bit SSL, NDPR compliance, bank-level security, and NITDA registration build buyer confidence', 580, 345);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'Product Categories',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout();
+      scrollInner('home-inner', 260);
+      setTimeout(() => {
+        moveCursor(350, 230);
+      }, 400);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-categories'), 6, 6);
+        showCallout('🛍️', 'CATEGORY BROWSING', 'Four product categories: Footwear (110K+ makers), Bags, Fashion (50K+ tailors), and Leather goods', 580, 190);
+      }, 1000);
+      setTimeout(done, 5500);
+    }
+  },
+  {
+    label: 'Featured Products',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout();
+      scrollInner('home-inner', 500);
+      setTimeout(() => moveCursor(380, 260), 400);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-featured'), 6, 6);
+        showCallout('✅', 'VERIFIED PRODUCTS', 'Every product shows NIN-verified seller status and "Made in Aba" authenticity badge — no counterfeit goods', 580, 200);
+      }, 1000);
+      setTimeout(done, 5500);
+    }
+  },
+  {
+    label: 'Multi-Channel Access',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout();
+      scrollInner('home-inner', 740);
+      setTimeout(() => moveCursor(400, 280), 400);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-access'), 6, 6);
+        showCallout('📱', 'ACCESS ANYWHERE', 'Mobile App, WhatsApp ordering, USSD (*384*ABA#) for feature phones, and full web — no one left behind', 580, 220);
+      }, 1000);
+      setTimeout(done, 5500);
+    }
+  },
+  {
+    label: 'Clicking "Products"...',
+    screen: 'home',
+    actions: (done) => {
+      hideCallout(); hideHighlight();
+      resetScroll('home-inner');
+      // Move to Products tab
+      const tabs = document.querySelectorAll('[data-screen="home"] .mock-tab');
+      const prodTab = tabs[9]; // Products tab
+      if (prodTab) {
+        const rect = prodTab.getBoundingClientRect();
+        const vpRect = document.getElementById('viewport').getBoundingClientRect();
+        moveCursor(rect.left - vpRect.left + 20, rect.top - vpRect.top + 8);
+        setTimeout(() => clickAt(rect.left - vpRect.left + 20, rect.top - vpRect.top + 8), 800);
+      }
+      setTimeout(done, 2000);
+    }
+  },
+
+  // ── SECTION: PRODUCT LISTINGS ──
+  {
+    label: 'Product Listings',
+    screen: 'listings',
+    url: 'aba-marketplace.gov.ng/products',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('SECTION 02', 'Product Catalog', 'Browse and shop from verified Aba artisans');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'Full Product Grid',
+    screen: 'listings',
+    actions: (done) => {
+      hideSection();
+      moveCursor(400, 300);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-all-products'), 8, 8);
+        showCallout('📦', '6 DEMO PRODUCTS', 'Full catalog with prices in Naira, star ratings, seller info, verified badges, and one-click "Add to Cart"', 600, 180);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'Adding to Cart...',
+    screen: 'listings',
+    actions: (done) => {
+      hideCallout(); hideHighlight();
+      const btn = document.getElementById('add-cart-btn');
+      if (btn) {
+        const rect = btn.getBoundingClientRect();
+        const vpRect = document.getElementById('viewport').getBoundingClientRect();
+        moveCursor(rect.left - vpRect.left + 40, rect.top - vpRect.top + 10);
+        setTimeout(() => {
+          clickAt(rect.left - vpRect.left + 40, rect.top - vpRect.top + 10);
+          btn.style.background = 'var(--success)';
+          btn.textContent = '✓ Added!';
+          showCallout('🛒', 'ADD TO CART', 'One-click shopping with real-time cart updates — buyers can purchase from multiple sellers in one order', 600, 380);
+        }, 800);
+      }
+      setTimeout(done, 4000);
+    }
+  },
+  {
+    label: 'Clicking seller profile...',
+    screen: 'listings',
+    actions: (done) => {
+      hideCallout(); hideHighlight();
+      const card = document.getElementById('click-exec-bag');
+      if (card) {
+        const img = card.querySelector('.mock-product-img');
+        const rect = img.getBoundingClientRect();
+        const vpRect = document.getElementById('viewport').getBoundingClientRect();
+        moveCursor(rect.left - vpRect.left + 30, rect.top - vpRect.top + 30);
+        setTimeout(() => clickAt(rect.left - vpRect.left + 30, rect.top - vpRect.top + 30), 800);
+      }
+      setTimeout(done, 2000);
+    }
+  },
+
+  // ── SECTION: SELLER PROFILE ──
+  {
+    label: 'Seller Profile',
+    screen: 'seller',
+    url: 'aba-marketplace.gov.ng/seller/chisom-leather',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('SECTION 03', 'Verified Seller Profile', 'NIN-verified trader with full transparency');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'Seller Stats & Verification',
+    screen: 'seller',
+    actions: (done) => {
+      hideSection();
+      moveCursor(400, 280);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-seller-stats'), 6, 6);
+        showCallout('👤', 'SELLER TRANSPARENCY', '687 orders, 2hr response time, 4.9 rating, member since 2022 — full trust metrics for every NIN-verified seller', 560, 240);
+      }, 600);
+      setTimeout(done, 5500);
+    }
+  },
+
+  // ── SECTION: SELLER ONBOARDING ──
+  {
+    label: 'Seller Onboarding',
+    screen: 'onboarding',
+    url: 'aba-marketplace.gov.ng/onboarding',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('SECTION 04', 'Seller Onboarding', '5-step NIN-verified registration');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'Step-by-Step Registration',
+    screen: 'onboarding',
+    actions: (done) => {
+      hideSection();
+      moveCursor(400, 220);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-steps'), 6, 6);
+        showCallout('📝', '5-STEP SIGNUP', 'Phone → NIN verification → Business details → Bank account → Done. Simple enough for any Aba trader to complete', 560, 170);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'NIN Verification Form',
+    screen: 'onboarding',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(380, 380);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-nin-form'), 8, 8);
+        showCallout('🪪', 'NIN IDENTITY CHECK', 'Every seller must verify their National ID — eliminates fraud, builds buyer trust, creates a formal digital economy', 540, 260);
+      }, 600);
+      setTimeout(done, 5500);
+    }
+  },
+
+  // ── SECTION: AI PLATFORM ──
+  {
+    label: 'AI Shopping Assistant',
+    screen: 'ai',
+    url: 'aba-marketplace.gov.ng/ai-assistant',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('SECTION 05', 'AI Shopping Assistant', 'Multilingual AI in 5 Nigerian languages');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'Language Selection',
+    screen: 'ai',
+    actions: (done) => {
+      hideSection();
+      moveCursor(350, 210);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-langs'), 6, 6);
+        showCallout('🌍', 'MULTILINGUAL AI', 'Supports Igbo, English, Yoruba, Hausa, and Pidgin — every Nigerian can shop in their preferred language', 560, 140);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'AI Chat Conversation',
+    screen: 'ai',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(350, 370);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-chat'), 6, 6);
+        showCallout('💬', 'SMART PRODUCT SEARCH', 'AI understands natural language queries and returns personalized product recommendations from verified sellers', 560, 280);
+      }, 600);
+      // Show Igbo messages after a beat
+      setTimeout(() => {
+        document.getElementById('chat-igbo-msg').style.display = 'block';
+        document.getElementById('chat-igbo-resp').style.display = 'block';
+      }, 3000);
+      setTimeout(done, 6000);
+    }
+  },
+
+  // ── SECTION: DASHBOARD ──
+  {
+    label: 'Government Dashboard',
+    screen: 'dashboard',
+    url: 'aba-marketplace.gov.ng/dashboard',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('SECTION 06', 'Government Dashboard', 'Real-time analytics for decision makers');
+      setTimeout(() => hideSection(), 2500);
+      setTimeout(done, 3000);
+    }
+  },
+  {
+    label: 'KPI Metrics',
+    screen: 'dashboard',
+    actions: (done) => {
+      hideSection();
+      moveCursor(400, 220);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-dash-stats'), 6, 6);
+        showCallout('📊', 'LIVE KPIs', '2,847 active sellers, 12,456 products, ₦8.2M revenue in 30 days, 98.2% uptime — real-time visibility for the Governor\'s office', 560, 180);
+      }, 600);
+      setTimeout(done, 5500);
+    }
+  },
+  {
+    label: 'Transaction Growth Chart',
+    screen: 'dashboard',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(400, 370);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-chart'), 6, 6);
+        showCallout('📈', 'GROWTH TRACKING', 'Monthly transaction volume chart shows continuous growth — data-driven evidence of marketplace adoption', 560, 310);
+      }, 600);
+      setTimeout(done, 5000);
+    }
+  },
+  {
+    label: 'AI Query Console',
+    screen: 'dashboard',
+    actions: (done) => {
+      hideCallout();
+      moveCursor(400, 480);
+      setTimeout(() => {
+        showHighlight(document.getElementById('hl-ai-query'), 6, 6);
+        showCallout('🤖', 'AI-POWERED ANALYTICS', 'Government officials can ask natural language questions about marketplace performance and get instant AI-generated insights', 560, 410);
+      }, 600);
+      setTimeout(done, 5500);
+    }
+  },
+
+  // ── FINALE ──
+  {
+    label: 'Demo Complete',
+    screen: 'dashboard',
+    actions: (done) => {
+      hideHighlight(); hideCallout();
+      showSection('✓ DEMO COMPLETE', 'Aba Digital Marketplace', 'Built by Stringz Technologies for Abia State Government');
+      moveCursor(500, 330);
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════
+// PLAYBACK ENGINE
+// ═══════════════════════════════════════════════════
+
+function runStep(index) {
+  if (index < 0 || index >= steps.length) return;
+  currentStep = index;
+  const step = steps[index];
+
+  stepLabel.textContent = step.label;
+  stepProgress.textContent = `${index + 1} / ${steps.length}`;
+  if (step.url) urlText.textContent = step.url;
+  if (step.screen) showScreen(step.screen);
+
+  step.actions(() => {
+    if (isPlaying && currentStep < steps.length - 1) {
+      playTimer = setTimeout(() => runStep(currentStep + 1), 500);
+    }
+  });
+}
+
+function play() {
+  isPlaying = true;
+  document.getElementById('btn-play').textContent = '⏸';
+  document.getElementById('btn-play').classList.add('active');
+  runStep(currentStep);
+}
+
+function pause() {
+  isPlaying = false;
+  clearTimeout(playTimer);
+  document.getElementById('btn-play').textContent = '▶';
+  document.getElementById('btn-play').classList.remove('active');
+}
+
+function next() {
+  pause();
+  if (currentStep < steps.length - 1) runStep(currentStep + 1);
+}
+
+function prev() {
+  pause();
+  if (currentStep > 0) runStep(currentStep - 1);
+}
+
+// Controls
+document.getElementById('btn-play').addEventListener('click', () => isPlaying ? pause() : play());
+document.getElementById('btn-next').addEventListener('click', next);
+document.getElementById('btn-prev').addEventListener('click', prev);
+
+// Keyboard
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  if (e.key === 'p') isPlaying ? pause() : play();
+});
+
+// Initialize
+moveCursor(500, 330);
+runStep(0);
+
+// Auto-play after 2 seconds
+setTimeout(() => play(), 2000);
+</script>
+
+</body>
+</html>
